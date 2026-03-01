@@ -1,4 +1,4 @@
-# review-agent
+# agent-tools
 
 Code review and test coverage agents for [OpenCode](https://opencode.ai). Designed to critically review AI-generated code before you commit or merge it.
 
@@ -20,10 +20,15 @@ Both agents are **model-agnostic** -- they use whatever model you have configure
 
 ## Install
 
+### OpenCode
+
 Create the directories if they don't exist, then copy the files:
 
 ```bash
-mkdir -p ~/.config/opencode/agents ~/.config/opencode/command
+mkdir -p ~/.config/opencode/agents ~/.config/opencode/command ~/.config/opencode/prompts
+
+# Prompts (shared)
+cp prompts/*.md ~/.config/opencode/prompts/
 
 # Agents
 cp agent/review.md ~/.config/opencode/agents/review.md
@@ -35,6 +40,27 @@ cp command/tests.md ~/.config/opencode/command/tests.md
 ```
 
 Restart OpenCode for the agents to appear.
+
+### Claude Code & Gemini CLI (Agent Skills)
+
+This repository supports the [Agent Skills](https://agentskills.io) specification. You can link these skills directly to your tool's configuration directory:
+
+**Claude Code**
+```bash
+mkdir -p ~/.claude/skills
+ln -s $(pwd)/skills/code-review ~/.claude/skills/code-review
+ln -s $(pwd)/skills/test-coverage ~/.claude/skills/test-coverage
+```
+
+**Gemini CLI**
+```bash
+# Link to your workspace skills
+mkdir -p .gemini/skills
+ln -s $(pwd)/skills/code-review .gemini/skills/code-review
+ln -s $(pwd)/skills/test-coverage .gemini/skills/test-coverage
+```
+
+> **Note on Maintenance:** The files in `skills/*/references/` are copies of the source-of-truth in `prompts/`. This ensures the skills are self-contained and portable. When updating review logic, remember to update both the shared prompt and the skill references.
 
 ## Usage
 
