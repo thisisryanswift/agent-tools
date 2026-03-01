@@ -22,6 +22,13 @@ Agents, prompts, and plugins for AI coding tools. Designed to critically review 
 - Presents design in digestible sections for incremental validation
 - Adapted from [obra/superpowers](https://github.com/obra/superpowers) (MIT License)
 
+### Jules skill
+- Teaches agents how to delegate tasks to [Google Jules](https://jules.google.com), an autonomous AI coding agent
+- Agents proactively suggest Jules for time-consuming, well-defined, or parallelizable work
+- Always asks before sending -- never auto-delegates
+- Covers the full workflow: prerequisites, prompt crafting, sending tasks, checking status, pulling results
+- Requires the [Jules CLI](https://jules.google.com) (`npm install -g @google/jules`)
+
 ### git-ai plugin (OpenCode)
 - Tracks which code changes are human-authored vs AI-authored
 - Creates checkpoints before and after every file edit
@@ -37,6 +44,7 @@ prompts/              # Source of truth for all prompt logic
   review-prompt.md
   tests-prompt.md
   brainstorming-prompt.md
+  jules-prompt.md
 
 agent/                # OpenCode agent definitions (reference prompts/)
 command/              # OpenCode slash commands (inject git context)
@@ -47,6 +55,7 @@ skills/               # Agent Skills spec (for Claude Code, Gemini CLI, etc.)
   code-review/
   test-coverage/
   brainstorming/
+  jules/
 
 Makefile              # sync and check targets
 ```
@@ -132,6 +141,7 @@ mkdir -p ~/.claude/skills
 ln -s $(pwd)/skills/code-review ~/.claude/skills/code-review
 ln -s $(pwd)/skills/test-coverage ~/.claude/skills/test-coverage
 ln -s $(pwd)/skills/brainstorming ~/.claude/skills/brainstorming
+ln -s $(pwd)/skills/jules ~/.claude/skills/jules
 ```
 
 **Gemini CLI**
@@ -140,6 +150,7 @@ mkdir -p .gemini/skills
 ln -s $(pwd)/skills/code-review .gemini/skills/code-review
 ln -s $(pwd)/skills/test-coverage .gemini/skills/test-coverage
 ln -s $(pwd)/skills/brainstorming .gemini/skills/brainstorming
+ln -s $(pwd)/skills/jules .gemini/skills/jules
 ```
 
 ## Usage
