@@ -1,6 +1,6 @@
 # agent-tools
 
-Code review and test coverage agents for [OpenCode](https://opencode.ai). Designed to critically review AI-generated code before you commit or merge it.
+Agents, prompts, and plugins for AI coding tools. Designed to critically review AI-generated code before you commit or merge it.
 
 ## What's included
 
@@ -16,51 +16,131 @@ Code review and test coverage agents for [OpenCode](https://opencode.ai). Design
 - Locates related test files and assesses what's covered vs. what's missing
 - Read-only: identifies gaps, does not write tests
 
-Both agents are **model-agnostic** -- they use whatever model you have configured globally.
+### Brainstorming skill
+- Turns rough ideas into validated designs through collaborative dialogue
+- Asks one question at a time, proposes 2-3 approaches with trade-offs
+- Presents design in digestible sections for incremental validation
+- Adapted from [obra/superpowers](https://github.com/obra/superpowers) (MIT License)
+
+### git-ai plugin (OpenCode)
+- Tracks which code changes are human-authored vs AI-authored
+- Creates checkpoints before and after every file edit
+- Requires [git-ai](https://github.com/acunniffe/git-ai) installed in PATH
+- Gracefully degrades if git-ai is not available
+
+All agents are **model-agnostic** -- they use whatever model you have configured globally.
+
+## Repository structure
+
+```
+prompts/              # Source of truth for all prompt logic
+  review-prompt.md
+  tests-prompt.md
+  brainstorming-prompt.md
+
+agent/                # OpenCode agent definitions (reference prompts/)
+command/              # OpenCode slash commands (inject git context)
+plugin/               # OpenCode plugins
+  git-ai.ts
+
+skills/               # Agent Skills spec (for Claude Code, Gemini CLI, etc.)
+  code-review/
+  test-coverage/
+  brainstorming/
+
+Makefile              # sync and check targets
+```
 
 ## Install
 
 ### OpenCode
 
-Create the directories if they don't exist, then copy the files:
+**Option A: Manual copy**
 
 ```bash
-mkdir -p ~/.config/opencode/agents ~/.config/opencode/command ~/.config/opencode/prompts
-
-# Prompts (shared)
-cp prompts/*.md ~/.config/opencode/prompts/
-
-# Agents
-cp agent/review.md ~/.config/opencode/agents/review.md
-cp agent/tests.md ~/.config/opencode/agents/tests.md
-
-# Commands
-cp command/review.md ~/.config/opencode/command/review.md
-cp command/tests.md ~/.config/opencode/command/tests.md
+make install
 ```
 
-Restart OpenCode for the agents to appear.
+Or copy files individually:
+
+```bash
+mkdir -p ~/.config/opencode/agents ~/.config/opencode/command ~/.config/opencode/prompts ~/.config/opencode/plugin
+
+cp prompts/*.md ~/.config/opencode/prompts/
+cp agent/*.md ~/.config/opencode/agents/
+cp command/*.md ~/.config/opencode/command/
+cp plugin/*.ts ~/.config/opencode/plugin/
+```
+
+**Option B: chezmoi externals (recommended for multi-machine setups)**
+
+Add this to `~/.local/share/chezmoi/.chezmoiexternal.toml`:
+
+```toml
+[".config/opencode/prompts/review-prompt.md"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/prompts/review-prompt.md"
+    refreshPeriod = "168h"
+
+[".config/opencode/prompts/tests-prompt.md"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/prompts/tests-prompt.md"
+    refreshPeriod = "168h"
+
+[".config/opencode/prompts/brainstorming-prompt.md"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/prompts/brainstorming-prompt.md"
+    refreshPeriod = "168h"
+
+[".config/opencode/agents/review.md"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/agent/review.md"
+    refreshPeriod = "168h"
+
+[".config/opencode/agents/tests.md"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/agent/tests.md"
+    refreshPeriod = "168h"
+
+[".config/opencode/command/review.md"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/command/review.md"
+    refreshPeriod = "168h"
+
+[".config/opencode/command/tests.md"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/command/tests.md"
+    refreshPeriod = "168h"
+
+[".config/opencode/plugin/git-ai.ts"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/plugin/git-ai.ts"
+    refreshPeriod = "168h"
+```
+
+Then run `chezmoi apply` (or `chezmoi -R apply` to force refresh).
+
+Restart OpenCode for agents to appear.
 
 ### Claude Code & Gemini CLI (Agent Skills)
 
-This repository supports the [Agent Skills](https://agentskills.io) specification. You can link these skills directly to your tool's configuration directory:
+This repository supports the [Agent Skills](https://agentskills.io) specification. Link skills to your tool's configuration directory:
 
 **Claude Code**
 ```bash
 mkdir -p ~/.claude/skills
 ln -s $(pwd)/skills/code-review ~/.claude/skills/code-review
 ln -s $(pwd)/skills/test-coverage ~/.claude/skills/test-coverage
+ln -s $(pwd)/skills/brainstorming ~/.claude/skills/brainstorming
 ```
 
 **Gemini CLI**
 ```bash
-# Link to your workspace skills
 mkdir -p .gemini/skills
 ln -s $(pwd)/skills/code-review .gemini/skills/code-review
 ln -s $(pwd)/skills/test-coverage .gemini/skills/test-coverage
+ln -s $(pwd)/skills/brainstorming .gemini/skills/brainstorming
 ```
-
-> **Note on Maintenance:** The files in `skills/*/references/` are copies of the source-of-truth in `prompts/`. This ensures the skills are self-contained and portable. When updating review logic, remember to update both the shared prompt and the skill references.
 
 ## Usage
 
@@ -97,9 +177,23 @@ Check test coverage for the new auth module
 @tests what's untested in the last commit?
 ```
 
+## Keeping skills in sync
+
+The files in `skills/*/references/` are copies of the source-of-truth in `prompts/`. To check for drift:
+
+```bash
+make check
+```
+
+To sync copies from prompts:
+
+```bash
+make sync
+```
+
 ## Model agnostic
 
-Neither agent has a model pinned. They use whatever model you have configured globally. Switch models before reviewing to get a different perspective:
+No agent has a model pinned. They use whatever model you have configured globally. Switch models before reviewing to get a different perspective:
 
 ```
 /model google/gemini-2.5-pro
@@ -129,76 +223,21 @@ This works well for an "AI reviewing AI" workflow: have one model write the code
 | Edge cases | Empty inputs, boundary values, null handling |
 | Integration points | Unmocked external calls, missing integration tests |
 
-## Output formats
-
-### Review report
-
-```
-## Review Summary
-
-| Severity | Count |
-| -------- | ----- |
-| Critical | 1     |
-| Major    | 2     |
-| Minor    | 0     |
-| Nit      | 1     |
-
-**Verdict:** ACCEPT WITH CHANGES
-
-## Findings
-
-### [Critical] src/auth.ts:42 - Missing authorization check
-
-**Category:** Security
-**Issue:** The endpoint allows unauthenticated access to user data.
-**Rationale:** Any caller can read arbitrary user records without a token.
-**Suggestion:**
-...
-
-## What Looks Good
-
-The error handling in the payment flow correctly retries transient failures.
-```
-
-### Tests report
-
-```
-## Test Coverage Summary
-
-| Status  | Count |
-| ------- | ----- |
-| Missing | 2     |
-| Partial | 1     |
-| Covered | 3     |
-
-## Findings
-
-### [Missing] src/auth.ts:42 - Login handler has no tests
-
-**Changed Logic:** New login function with password validation and token generation.
-**Related Tests:** None found.
-**Expected Coverage:** Test valid login, invalid password, missing user, and token expiry.
-
-### [Partial] src/api/users.ts:88 - Error path not tested
-
-**Changed Logic:** Added error handling for database connection failures.
-**Related Tests:** tests/api/users.test.ts:15 - tests success path only.
-**Gap:** No test for connection failure branch.
-**Expected Coverage:** Test database unavailable scenario.
-
-## Already Well-Tested
-
-The input validation in src/api/users.ts has thorough tests covering all edge cases.
-```
-
 ## Customization
 
-Edit the agent files in `~/.config/opencode/agents/` to:
+Edit the prompt files in `prompts/` to:
 
 - Adjust the review checklist for your domain
 - Change severity thresholds or coverage criteria
 - Add project-specific patterns to watch for
 - Modify the output format
+
+After editing, run `make sync` to propagate changes to the skills references.
+
+## Credits
+
+- Brainstorming skill adapted from [obra/superpowers](https://github.com/obra/superpowers) (MIT License)
+- git-ai plugin integrates with [acunniffe/git-ai](https://github.com/acunniffe/git-ai)
 
 ## License
 
