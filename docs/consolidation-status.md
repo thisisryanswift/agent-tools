@@ -129,7 +129,9 @@ Start with [the handoff](paseo-handoff.md).
 
 - Ryan's direction: stop using `opencode-reef` and use Paseo for coding.
 - Removed `opencode-reef` from chezmoi (source, test, and docs) and added it to
-  `.chezmoiremove`, so `chezmoi apply` deletes it on every host. Removed the
+  `.chezmoiremove`, so `chezmoi apply` deletes it on every host. Ryan ran `chezmoi update`
+  on Tortoise and Marlin on 2026-10-15; checks over SSH from Reef confirmed both
+  are at `2bf5654` with `opencode-reef` gone and no pending changes. Removed the
   `opencode.reef.wharfi.sh` Caddy site and deployed it with `apply-reef-caddy`.
 - Removed `machine`'s Reef section, which deployed legacy OpenCode builds and
   restarted the old `paseo` service; Homebrew keeps updating `rswift`'s OpenCode.
