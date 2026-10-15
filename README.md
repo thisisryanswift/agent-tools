@@ -1,16 +1,26 @@
 # agent-tools
 
-Agents, prompts, and plugins for AI coding tools. Designed to critically review AI-generated code before you commit or merge it.
+Ryan's personal agent toolkit: selected coding, writing, browser, and maintenance
+skills, with explicit runtime and execution-host choices. This repository is
+tailored to Ryan's setup; it is not a generally supported agent distribution.
+
+## Working plan
+
+The [approved plan](docs/personal-agent-toolkit-plan.md) describes the Reef-centered
+Paseo coding environment, Hermes's separate assistant role, and the broader roadmap.
+See the [skill catalog](docs/skill-catalog.md) for selections and compatibility,
+[source provenance](docs/source-provenance.md) for imported material, and
+[consolidation status](docs/consolidation-status.md) for implementation progress.
 
 ## What's included
 
-### Review agent (`/review`)
+### Code review
 - Reviews diffs for logic errors, security issues, performance problems, and AI slop
 - Reads your project's `AGENTS.md` and surrounding code to understand conventions before reviewing
 - Produces structured reports with severity levels and actionable suggestions
-- Read-only: cannot modify your files
+- Requests read-only review; runtime permissions must enforce access restrictions
 
-### Tests agent (`/tests`)
+### Test coverage
 - Identifies missing or incomplete test coverage in changed code
 - Discovers your project's test conventions automatically (any framework, any language)
 - Locates related test files and assesses what's covered vs. what's missing
@@ -22,138 +32,87 @@ Agents, prompts, and plugins for AI coding tools. Designed to critically review 
 - Presents design in digestible sections for incremental validation
 - Adapted from [obra/superpowers](https://github.com/obra/superpowers) (MIT License)
 
-### Jules skill
-- Teaches agents how to delegate tasks to [Google Jules](https://jules.google.com), an autonomous AI coding agent
-- Agents proactively suggest Jules for time-consuming, well-defined, or parallelizable work
-- Always asks before sending -- never auto-delegates
-- Covers the full workflow: prerequisites, prompt crafting, sending tasks, checking status, pulling results
-- Requires the [Jules CLI](https://jules.google.com) (`npm install -g @google/jules`)
+### Specialist skills
+- `agent-session-migration`: OpenCode V2 session location and transfer workflow
+- `ryan-blog`: current blogging guidance consolidated with the older style skill
+- `browser-harness-cli`: isolated profiles and workers through the Python/CDP CLI
+- `wayland-app-icon-fix`: runtime/desktop identity diagnosis on a Linux desktop
 
-### git-ai plugin (OpenCode)
-- Tracks which code changes are human-authored vs AI-authored
-- Creates checkpoints before and after every file edit
-- Requires [git-ai](https://github.com/acunniffe/git-ai) installed in PATH
-- Gracefully degrades if git-ai is not available
+Jules and ToolHive are retired from the target toolkit.
 
-All agents are **model-agnostic** -- they use whatever model you have configured globally.
+### Retained OpenCode adapters
+
+`agent/` and `command/` contain the older review/tests adapters. V2 documents
+compatibility for these file formats; this repository's permissions and command
+behavior still need runtime verification. `plugin/git-ai.ts` uses the V1 plugin
+API and requires a port before OpenCode V2 use. The skill installer installs none
+of these adapters.
+
+The skills do not pin a model. A portable file format does not establish equivalent
+behavior across models, runtimes, or clients; record those results separately.
 
 ## Repository structure
 
 ```
-prompts/              # Source of truth for all prompt logic
+prompts/              # Canonical prompts for the original engineering skills
   review-prompt.md
   tests-prompt.md
   brainstorming-prompt.md
-  jules-prompt.md
 
 agent/                # OpenCode agent definitions (reference prompts/)
 command/              # OpenCode slash commands (inject git context)
-plugin/               # OpenCode plugins
+plugin/               # Retained V1 integration source
   git-ai.ts
 
-skills/               # Agent Skills spec (for Claude Code, Gemini CLI, etc.)
+skills/               # Canonical portable units, selected individually
   code-review/
   test-coverage/
   brainstorming/
-  jules/
+  agent-session-migration/
+  ryan-blog/
+  browser-harness-cli/
+  wayland-app-icon-fix/
 
-Makefile              # sync and check targets
+docs/                 # Plan, catalog, provenance, and progress
+evals/                # Evaluation migration notes
+scripts/              # Structural checker and explicit skill-link installer
+tests/                # Installer preservation tests
+Makefile              # check, sync, test, and install targets
 ```
 
 ## Install
 
-### OpenCode
+Install on the host/account where the agent executes, from a persistent checkout
+it can read. Paseo clients do not each need a copy of every runtime's skills.
+Choose individual IDs from the catalog and confirm that runtime's discovery path.
+Hermes gets its own selected set and profile-scoped deployment.
 
-**Option A: Manual copy**
-
-```bash
-make install
-```
-
-Or copy files individually:
+With Python 3.9+:
 
 ```bash
-mkdir -p ~/.config/opencode/agents ~/.config/opencode/command ~/.config/opencode/prompts ~/.config/opencode/plugin
+# Example: preview selected skills for an OpenCode execution account.
+python3 scripts/install-skills.py \
+  --destination "$HOME/.config/opencode/skills" --dry-run \
+  code-review test-coverage
 
-cp prompts/*.md ~/.config/opencode/prompts/
-cp agent/*.md ~/.config/opencode/agents/
-cp command/*.md ~/.config/opencode/command/
-cp plugin/*.ts ~/.config/opencode/plugin/
+# Apply to the chosen discovery directory.
+make install ARGS='--destination /absolute/discovery/directory code-review test-coverage'
 ```
 
-**Option B: chezmoi externals (recommended for multi-machine setups)**
+The installer links whole skill directories, preserving relative references.
+It preflights the selection, preserves existing files/foreign links, and is
+idempotent for matching links. It requires an explicit destination and skill list.
+Keep the source checkout at its chosen path while links use it.
 
-Add this to `~/.local/share/chezmoi/.chezmoiexternal.toml`:
+Compare any existing installed copies before a cutover, especially chezmoi-managed
+files. Update managed sources and apply only scoped targets. Check discovery in
+the actual runtime after installation; host paths, tools, and session reload rules
+remain runtime-specific. The legacy automatic chezmoi downloads are retired.
 
-```toml
-[".config/opencode/prompts/review-prompt.md"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/prompts/review-prompt.md"
-    refreshPeriod = "168h"
+## Retained adapter usage
 
-[".config/opencode/prompts/tests-prompt.md"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/prompts/tests-prompt.md"
-    refreshPeriod = "168h"
-
-[".config/opencode/prompts/brainstorming-prompt.md"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/prompts/brainstorming-prompt.md"
-    refreshPeriod = "168h"
-
-[".config/opencode/agents/review.md"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/agent/review.md"
-    refreshPeriod = "168h"
-
-[".config/opencode/agents/tests.md"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/agent/tests.md"
-    refreshPeriod = "168h"
-
-[".config/opencode/command/review.md"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/command/review.md"
-    refreshPeriod = "168h"
-
-[".config/opencode/command/tests.md"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/command/tests.md"
-    refreshPeriod = "168h"
-
-[".config/opencode/plugin/git-ai.ts"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/thisisryanswift/agent-tools/main/plugin/git-ai.ts"
-    refreshPeriod = "168h"
-```
-
-Then run `chezmoi apply` (or `chezmoi -R apply` to force refresh).
-
-Restart OpenCode for agents to appear.
-
-### Claude Code & Gemini CLI (Agent Skills)
-
-This repository supports the [Agent Skills](https://agentskills.io) specification. Link skills to your tool's configuration directory:
-
-**Claude Code**
-```bash
-mkdir -p ~/.claude/skills
-ln -s $(pwd)/skills/code-review ~/.claude/skills/code-review
-ln -s $(pwd)/skills/test-coverage ~/.claude/skills/test-coverage
-ln -s $(pwd)/skills/brainstorming ~/.claude/skills/brainstorming
-ln -s $(pwd)/skills/jules ~/.claude/skills/jules
-```
-
-**Gemini CLI**
-```bash
-mkdir -p .gemini/skills
-ln -s $(pwd)/skills/code-review .gemini/skills/code-review
-ln -s $(pwd)/skills/test-coverage .gemini/skills/test-coverage
-ln -s $(pwd)/skills/brainstorming .gemini/skills/brainstorming
-ln -s $(pwd)/skills/jules .gemini/skills/jules
-```
-
-## Usage
+These commands apply after explicitly enabling compatible OpenCode agent/command
+adapters. For portable skills, ask the runtime to load the selected catalog ID.
 
 ### Review
 
@@ -190,10 +149,13 @@ Check test coverage for the new auth module
 
 ## Keeping skills in sync
 
-The files in `skills/*/references/` are copies of the source-of-truth in `prompts/`. To check for drift:
+The three engineering skills keep copied prompt references. Specialist skills are
+edited directly in their own directories. To check frontmatter basics, portable
+Markdown references, prompt-copy drift, and installer behavior:
 
 ```bash
 make check
+make test
 ```
 
 To sync copies from prompts:
@@ -204,13 +166,9 @@ make sync
 
 ## Model agnostic
 
-No agent has a model pinned. They use whatever model you have configured globally. Switch models before reviewing to get a different perspective:
-
-```
-/model google/gemini-2.5-pro
-```
-
-This works well for an "AI reviewing AI" workflow: have one model write the code, switch to a different model, then review.
+Select models through the runtime's normal controls. Independent reviews can use
+a different model, but this is a workflow choice rather than evidence of better
+results. See [evaluation notes](evals/README.md) for the current evidence status.
 
 ## What gets reviewed
 
