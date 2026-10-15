@@ -4,8 +4,12 @@ Status: OpenCode-first revision approved in Crit after round 3 on 2026-10-01
 (session `0358398a35ac`), superseding the earlier baseline approved in session
 `0b48471eca18`. Open questions remain where no explicit choice is recorded below.
 
-Last reconciled: **2026-10-04**, using deployment checks from October 1–3 and fresh
-four-store session metadata/transcript comparisons on October 4.
+Last reconciled: **2026-10-10**, using deployment checks from October 1–3,
+four-store session metadata/transcript comparisons on October 4, Ryan's
+confirmation of normal Paseo use from Tortoise plus live Marlin-to-Reef toolkit
+source reconciliation on October 6, the Paseo 0.11.0 upgrade on October 7, and the
+provider, `/srv/dev`, and Hermes changes of October 9–10. The current snapshot is in
+[consolidation status](consolidation-status.md).
 
 For the fresh Reef/Paseo session, use [the continuation handoff](paseo-handoff.md).
 It records durable artifact locations, the accepted agent-wide CASS scope, and
@@ -29,15 +33,15 @@ Ryan's direction. Deployment claims below are limited to the checks described.
 
 | Workstream | Recorded status |
 | --- | --- |
-| Reef backend and account migration | Upstream Paseo `0.11.0-beta.2` runs as `rswift` with Node `26.10.0` and canonical OpenCode `2.0.21`. The old `paseo` service is stopped/disabled; legacy OpenCode retirement is still pending. |
-| OpenCode and client access | OpenAI OAuth with `openai/gpt-6.1-sol` passed a tool turn. Marlin and Android work. Desktop `0.11.0-beta.3` is installed on Marlin, Tortoise, and Reef; Reef/Tortoise GUI checks are deferred until physical access. |
+| Reef backend and account migration | Upstream Paseo `0.11.0` (npm package in `~/.local/share/paseo`, since 2026-10-07) runs as `rswift` with Node `26.10.0` and canonical OpenCode `2.0.21`. The old `paseo` service is stopped/disabled; legacy OpenCode retirement is still pending. |
+| OpenCode and client access | OpenAI OAuth with `openai/gpt-6.1-sol` passed a tool turn. Marlin, Android, and Tortoise are user-confirmed working; Tortoise was confirmed October 6. Desktop `0.11.0-beta.3` is installed on Marlin, Tortoise, and Reef; Reef's GUI check remains deferred until physical access. |
 | Native/Paseo continuity | Existing Paseo history and native continuation work with **Reload agent** on return. Ryan accepted manual reload; automatic live synchronization is deferred. Native-origin import and the remaining focused checks are still open. |
-| Session history and legacy cleanup | Reef CASS `0.10.0` indexes all four preserved session-only snapshots; source-filtered CLI/MCP search and canonical viewing pass over SSH. Client wiring, older-store coverage, and scheduled refresh/backups remain open. Native history merges and legacy shutdown remain paused. |
-| Toolkit source consolidation | Seven selected skills and installer/source checks are recorded as complete locally. Consumer deployment and runtime verification remain open in workstream B. |
-| Broader integrations | Dedicated Codex/Claude/Gemini coverage, Hermes context sharing, browser verification, Entire, and additional execution hosts remain follow-on work. |
+| Session history and legacy cleanup | Reef CASS `0.10.0` indexes all four preserved session-only snapshots; SSH and user-global native/Paseo OpenCode MCP search/view pass. Other runtime registrations, older-store coverage, and scheduled refresh/backups remain open. Native history merges and legacy shutdown remain paused. |
+| Toolkit source consolidation | Seven selected skills and installer/source changes are now in both Marlin and Reef working trees, reconciled October 6. Reef checks pass; source changes remain uncommitted. Consumer deployment and runtime verification remain open in workstream B. |
+| Broader integrations | Ryan confirmed direct Codex and Claude connections working on October 6. Antigravity/`agy` and Cursor work through Paseo as of October 10 (smoke tests). Hermes context sharing, browser verification, Entire, and additional execution hosts remain follow-on work. |
 
 The actionable closeout checklist is in [section 6](#6-delivery-sequence). Resume
-with Reef-owned CASS client wiring, older-store coverage, and possible
+with Reef-owned CASS refresh/backup coverage, older-store coverage, and possible
 changed-ID copies. Snapshot inspection explains the changed assistant message and
 confirms matching stored histories behind the two native API-read failures;
 native readability still needs diagnosis.
@@ -84,6 +88,10 @@ results. The plan should test that with role-specific capabilities and real work
 
 ### Direction established by Ryan
 
+- (2026-10-10) Paseo is the coding interface. Hermes on **Lobster** is the general
+  assistant; Reef runs no local Hermes runtime, only the desktop client.
+- (2026-10-10) All development lives under `/home/rswift/dev`; `/srv/dev` is retired.
+  For cleanups, keep the newest copy and drop old ones rather than archiving.
 - Centralize reusable work from `agent-tools`, `skills`, chezmoi's personal skills
   and evaluations, and the browser repositories, wrappers, workspace, and saved
   customizations. Use the source map below to decide what to import or integrate.
@@ -100,6 +108,15 @@ results. The plan should test that with role-specific capabilities and real work
   initial setup (Ryan, 2026-10-02). Automatic synchronization is deferred.
 - Compare session drift across Marlin, Reef's two accounts, and Tortoise before
   importing or archiving legacy history and retiring services (Ryan, 2026-10-03).
+- Prefer native CASS connectors and its built-in scheduler over maintained custom
+  collection/export integrations (Ryan, 2026-10-04). Preserve migration snapshots;
+  validate direct Reef ingestion and remote transport safety before cutover.
+- Ongoing local development on other machines remains expected (Ryan,
+  2026-10-04). Reef's shared CASS archive must collect those new histories too;
+  native Reef-only refresh does not satisfy the collection requirement.
+- Defer the upstream follow-up about safe live remote OpenCode collection
+  (Ryan, 2026-10-04). Retain the multi-host requirement and preserved searchable
+  snapshots; do not publish an issue or replace native support with custom glue.
 - Keep Hermes as a separate general technical assistant. Give Hermes and the
   coding environment mutual awareness through selected context and handoffs,
   while maintaining purpose-fit tool and skill sets.
@@ -238,6 +255,24 @@ workflow validation continued after design approval as recorded below.
 - The legacy `opencode` account remained in place. Its private home required a
   subsequent sudo-assisted inventory, recorded below. The deployment runbook
   still needs reconciliation with the new runtime.
+
+### Tortoise client confirmation — 2026-10-06
+
+Ryan confirmed that Paseo works as expected while using it from Tortoise. This
+completes the deferred Tortoise client check. Reef's desktop GUI check remains
+deferred until physical access; the separate OpenCode workflow checks remain open.
+
+### Backend upgrade to Paseo 0.11.0 — 2026-10-07
+
+Ryan chose to track Paseo betas/releases and keep `~/dev/tools/paseo` as a
+development clone only. The service now runs the published `@getpaseo/cli@0.11.0`
+from `~/.local/share/paseo` via `paseo daemon run --home ~/.paseo`, with the same
+listener, hostnames, and PATH environment. Ryan ran the switch script from a shell
+outside Paseo; it took a stopped-state `~/.paseo` backup first. Afterwards the
+daemon reported `0.11.0`, listened on the Tailscale address, and listed Claude,
+Codex, and OpenCode as available; Paseo MCP calls from a running agent worked.
+Antigravity was unavailable until `agy` was signed in; see the provider table. The npm cooldown in
+`~/.npmrc` was overridden for this install only. Upgrade steps are in the handoff.
 
 ### Session drift audit started on 2026-10-03
 
@@ -385,12 +420,12 @@ where available and make any separately billed API route explicit.
 | Priority | Ryan's subscription/service | Access path to establish | Paseo validation needed |
 | --- | --- | --- | --- |
 | First | Existing daily OpenCode model access | Verified OpenAI OAuth with `openai/gpt-6.1-sol` under `rswift`. The OpenRouter model of the same display name failed. | Tool use and manual-reload native continuation passed; finish native-origin import, permission/interruption, attachment, and selected client checks. |
-| Next 1 | OpenAI/Codex | Use Ryan's Codex subscription through the dedicated Codex runtime on Reef. | Initial tool/attachment smoke checks passed through Codex; subscription-route and cross-client coverage still need explicit completion. |
-| Next 2 | Claude | Verify Claude Code access for the current subscription; record any separate API route independently. | Test authentication, model choice, tool use, and session continuity through the Claude Code adapter. |
-| Next 3 | Google AI Pro / Gemini | Establish Ryan's requested Antigravity/`agy` route and its actual subscription-backed capabilities. | Verify the required agent interface and adapter from Reef. Any alternate Gemini route needs an explicit choice rather than counting as proof of this one. |
+| Next 1 | OpenAI/Codex | Use Ryan's Codex subscription through the dedicated Codex runtime on Reef. | Initial tool/attachment smoke checks passed through Codex. **Ryan confirmed the direct Codex connection working on 2026-10-06.** |
+| Next 2 | Claude | Verify Claude Code access for the current subscription; record any separate API route independently. | **Ryan confirmed the direct Claude connection working on 2026-10-06.** |
+| Next 3 | Google AI Pro / Gemini | Establish Ryan's requested Antigravity/`agy` route and its actual subscription-backed capabilities. | **2026-10-10:** `agy` 1.3.0 signed in on Reef; Paseo 0.11.0's built-in Antigravity provider is available (18 models, Full access only) and completed a read-only tool task with `gemini-3.8-flash-medium`. Cross-client follow-up not yet exercised. |
 | Expand | OpenCode Go | Verify subscription-backed model use in OpenCode, earlier if it is already one of the selected daily routes. | Exercise the actual subscription-backed models through Paseo. |
 | Expand | GLM | Confirm the subscribed GLM service and eligible runtime/API integration. The local Paseo custom-provider doc describes a Z.AI coding-plan route to evaluate. | Test the selected runtime/custom-provider route with that subscription. |
-| Later | Cursor | Identify the usable Cursor agent/CLI integration and subscription-backed capabilities. | Establish an adapter or handoff path; support has not been verified in this inventory. |
+| Done | Cursor | `cursor-agent` CLI (official Linux installer; Homebrew's cask is macOS-only) signed in with Ryan's work account. | **2026-10-10:** configured as a Paseo ACP provider (`cursor-agent acp`, applied with `paseo reload`); 44 models, Agent/Plan/Ask modes; a read-only Plan-mode tool task with `composer-2.5` passed. |
 | Later | GitHub Copilot | Verify Copilot CLI access and the models available on the current subscription. | Paseo's local README lists Copilot; test the selected CLI/runtime configuration. |
 | Later | Devin | Identify the supported Devin task/session interface and account access. | Establish how work is started, observed, and reviewed; direct Paseo support remains unverified. |
 
@@ -564,9 +599,9 @@ as `browser-harness-workers` retain their own release lifecycle.
 
 ### A. First milestone: OpenCode-first coding from Reef and the four clients
 
-**Status on 2026-10-04:** the core runtime works; history reconciliation and
-operational closeout remain open. Client GUI checks explicitly deferred by Ryan
-remain recorded below.
+**Status on 2026-10-06:** the core runtime works; history reconciliation and
+operational closeout remain open. Tortoise's client check is complete; Reef's GUI
+check remains deferred until physical access.
 
 Completed:
 
@@ -582,8 +617,13 @@ Completed:
 - [x] Install upstream desktop `0.11.0-beta.3` on Marlin, Tortoise, and Reef and
   correct the old desktop launch paths. Confirm Marlin and Android work against
   Reef. Verify built-in daemon management is disabled on Tortoise and Reef.
+- [x] Confirm normal Paseo use from Tortoise against Reef. Ryan reported it working
+  as expected while using it on **2026-10-06**.
 - [x] Open the Paseo-created session in native OpenCode with its full history,
   continue natively, and observe that turn in Paseo after **Reload agent**.
+- [x] Enable Reef's user-global CASS MCP registration through chezmoi and verify
+  real native/Paseo OpenCode searches plus canonical message reads, without
+  service restarts. Private proof is linked from the continuation handoff.
 
 Closeout, in current working order:
 
@@ -592,7 +632,10 @@ Closeout, in current working order:
    assistant message and matches stored rows for both API failures. Finish older
    JSON/Marlin CASS coverage, possible changed-ID copies, and native-readability
    diagnosis before selecting imports. All four snapshots are searchable on Reef;
-   enable user-global OpenCode CASS access next, then automate refresh/backups.
+   user-global native/Paseo OpenCode CASS access is verified. Validate direct Reef
+   ingestion and CASS's built-in scheduling next, without a custom export-refresh
+   pipeline; review routine backups. The upstream follow-up on safe native live
+   remote collection is deferred by Ryan; remote automatic refresh is undeployed.
 2. [ ] Choose which histories to import or archive after reviewing that evidence.
    Take a fresh appropriate backup before changes, preserve the original stores,
    and validate any selected import without overwriting existing `rswift` history.
@@ -605,19 +648,21 @@ Closeout, in current working order:
 5. [ ] Finish the focused OpenCode checks: native-origin session import into
    Paseo, a Paseo tool turn after returning from native, permissions/questions,
    interruption, and an OpenCode attachment.
-6. [ ] **Deferred until physical access:** open the installed desktop clients on
-   Reef and Tortoise, connect to Reef, continue the same work, and confirm client
+6. [ ] **Reef desktop—deferred until physical access:** open its installed client,
+   connect to the Reef backend, continue the same work, and confirm client
    shutdown leaves backend work available. Remote-desktop setup is deferred too.
 7. [ ] Reconcile managed service/config sources and routine backup coverage for
    uploads and effective service configuration. The published October runbook and
    continuation handoff record current state; the dirty Reef homelab branch's
-   historical edits remain preserved. Toolkit implementation changes remain
-   uncommitted on Marlin and have a private recovery snapshot on Reef.
+   historical edits remain preserved. Toolkit implementation changes were
+   reconciled from live Marlin into this Reef checkout on October 6 and remain
+   uncommitted on both hosts, with private recovery snapshots retained.
 
 Completion: a version-recorded Reef backend, usable OpenCode V2 with Ryan's
 intended model access, four working Paseo clients, and demonstrated continuity
 at the level approved in this review. An unresolved required behavior is recorded
-as a blocker. Dedicated Codex, Claude, and Gemini routes follow this milestone.
+as a blocker. Dedicated Codex and Claude connections are user-confirmed working
+as of 2026-10-06; the Gemini route follows this milestone.
 
 Independent source consolidation can proceed alongside this work; its completed
 local checks remain recorded in the consolidation status. Broader provider/worker
@@ -626,8 +671,9 @@ coverage does not displace the daily OpenCode workflow on the critical path.
 ### B. Consolidate reusable sources and deploy selected capability sets
 
 **Recorded progress:** source selection/import, seven skills, installer checks,
-and source provenance are complete locally in the toolkit workstream. Consumer
-inventory, live deployment, and runtime/behavioral verification remain open. The
+and source provenance are complete locally in the toolkit workstream. Marlin's
+source changes are now also in this Reef checkout, with checks re-run on October 6.
+Consumer inventory, live deployment, and runtime/behavioral verification remain open. The
 following describes its full scope; use
 [consolidation status](consolidation-status.md) for the completed source checks.
 
@@ -661,10 +707,15 @@ its consumers have migrated.
 
 ### C. Extend coverage and connect the assistant/coding workflows
 
-**Status:** follow-on work. The early Codex smoke tests are partial evidence;
-complete provider/subscription coverage is still outstanding.
+**Status:** follow-on work. Ryan confirmed direct Codex and Claude connections
+working on 2026-10-06; Antigravity/`agy` passed a Paseo smoke test on 2026-10-10.
+Cursor passed the same smoke test the same day. Remaining provider/subscription
+coverage is still outstanding.
 
-1. Add dedicated Codex, then Claude, then Gemini through Antigravity/`agy`. Each
+1. [x] Codex and Claude: direct connections user-confirmed working, 2026-10-06.
+   [x] Gemini through Antigravity/`agy`: Paseo tool-task smoke test passed, 2026-10-10.
+   [x] Cursor via `cursor-agent acp`: Paseo tool-task smoke test passed, 2026-10-10.
+   Each
    route must authenticate through the intended subscription, complete a real
    tool-using task, and support cross-client follow-up. Then expand OpenCode Go
    and GLM coverage where the initial daily-model checks did not already cover
@@ -774,8 +825,9 @@ Established decisions:
 - **Sequence and first model route:** OpenCode first, then dedicated Codex, Claude,
   and Gemini/`agy`. OpenAI OAuth with `openai/gpt-6.1-sol` is the first verified
   OpenCode route; wider subscription coverage remains to be tested.
-- **Client testing:** Reef/Tortoise desktop GUI checks and remote-desktop setup are
-  deferred until physical access. Marlin and Android are user-confirmed working.
+- **Client testing:** Marlin, Android, and Tortoise are user-confirmed working;
+  Tortoise was confirmed on 2026-10-06. Reef's desktop GUI check remains deferred
+  until physical access. Remote-desktop setup remains deferred.
 - **History/archive host:** Reef is the selected canonical CASS archive host
   (2026-10-04), owned by `rswift` and searched remotely over SSH/MCP. Reconcile
   histories from all sources there. Which native copies to import or retain

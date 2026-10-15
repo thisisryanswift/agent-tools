@@ -1,8 +1,10 @@
 # Continue the Reef agent consolidation from Paseo
 
-Handoff: **2026-10-04**, from the Marlin OpenCode session to a fresh OpenCode agent
-running as `rswift` on Reef through Paseo. This is a working checkpoint, not a new
-design exercise. Ryan wants to start using the setup while completing it.
+Handoff started **2026-10-04**, from the Marlin OpenCode session to agents running
+as `rswift` on Reef through Paseo; last updated **2026-10-10**. This is a working
+checkpoint, not a new design exercise. Ryan is using the setup while completing it.
+The current snapshot and open work are in [consolidation status](consolidation-status.md);
+dated evidence is in [October 2026 checkpoints](checkpoints-2026-10.md).
 
 ## Start here
 
@@ -10,8 +12,13 @@ Use `/home/rswift/dev/personal/agent-tools` on Reef as the Paseo workspace. Read
 this document and [consolidation status](consolidation-status.md); consult the
 [approved plan](personal-agent-toolkit-plan.md) for wider context as needed.
 
-**The next useful task is enabling CASS globally for Reef's OpenCode runtime and
-verifying a real history search from both native OpenCode and a Paseo agent.**
+**Next useful work: native local Reef CASS ingestion/scheduler validation and a
+backup review.** The legacy `opencode`/`paseo` accounts and `opencode-reef` were
+retired on 2026-10-10; Paseo is the coding interface. The upstream follow-up about safe
+live remote OpenCode collection is **deferred by Ryan (2026-10-04)**. Ryan wants
+no maintained custom integrations; do not schedule the migration export helper.
+CASS is now available globally to Reef's OpenCode runtime, with real searches and
+canonical message reads verified from native OpenCode and this running Paseo agent.
 Ryan accepted agent-wide access: the same Reef archive should serve OpenCode,
 dedicated Codex, Claude, and later Gemini/other runtimes. Start with OpenCode;
 configure the others as their runtime rollout proceeds. A model switch inside
@@ -25,25 +32,42 @@ orchestration framework, a maintained Paseo fork, or another full migration plan
 
 ## What already works
 
-- Reef's lingering `rswift` user service runs upstream Paseo **0.11.0-beta.2**,
-  commit `b5b43edd65cc1253493b13cca3941dd390df6ef3`, from
-  `/srv/dev/tools/paseo-next`, using Node **26.10.0**. The checkout is clean and
-  intentionally pinned; a newer remote branch is not an instruction to upgrade.
+- Reef's lingering `rswift` user service runs upstream Paseo **0.11.0** from the
+  published npm package `@getpaseo/cli`, installed under `~/.local/share/paseo`
+  and started as `paseo daemon run --home ~/.paseo` with Node **26.10.0**.
+  Switched from the beta.2 source build in `/srv/dev/tools/paseo-next` on
+  2026-10-07. Claude, Codex, and OpenCode were available afterwards.
+  `~/dev/tools/paseo` is Ryan's development clone; the service never runs from it.
+- Upgrades follow the npm `beta` tag, which also receives stable releases. Ryan's
+  `~/.npmrc` sets `min-release-age=7`; override it per deliberate upgrade only:
+  `npm install -g --prefix ~/.local/share/paseo --min-release-age=0 @getpaseo/cli@beta`,
+  then `systemctl --user restart paseo` from a shell outside Paseo. npm's blocked
+  install scripts (esbuild, node-pty, msgpackr-extract) are not needed on Reef;
+  bundled binaries work. Ops scripts and unit copies: `~/.local/share/paseo/ops/`.
 - Active Paseo state/config/logs: `/home/rswift/.paseo`. Listener:
   `100.81.54.26:6767`. The old `paseo` account's service is stopped/disabled.
 - Canonical OpenCode executable: `/home/linuxbrew/.linuxbrew/bin/opencode`,
   verified **2.0.21**. An OpenAI OAuth tool turn passed with
   `openai/gpt-6.1-sol`. The same model through OpenRouter failed with `User not found`.
 - Desktop **0.11.0-beta.3** is installed on Marlin, Tortoise, and Reef. Ryan confirmed
-  Marlin and Android work; Reef/Tortoise GUI checks await physical access.
+  Marlin and Android work, and confirmed Tortoise during normal Paseo use on
+  October 6. Reef's GUI check awaits physical access.
 - Paseo history opens in native OpenCode, and native continuation appears in
   Paseo after **Reload agent**. Ryan accepted this serialized handoff. Separate
   helper/background processes share persistent storage; live synchronization is
   not established or required for this milestone.
+- Direct Codex and Claude connections: Ryan confirmed both working on October 6.
+  Antigravity/`agy`: signed in and smoke-tested through Paseo on October 10. After
+  signing in, Paseo kept its cached "unavailable" status until
+  `paseo provider diagnostic antigravity` forced a re-check. Antigravity runs in
+  Full access only (`--dangerously-skip-permissions`).
+- Cursor: `cursor-agent` installed and signed in; added to `~/.paseo/config.json` as
+  an ACP provider and applied with `paseo reload`. Smoke-tested on October 10.
 - Reef CASS **0.10.0** has indexed preserved session-only snapshots from Marlin
   `rswift`, Reef `rswift`, Reef legacy `opencode`, and Tortoise `rswift`. Source-
   filtered CLI and MCP searches passed, as did an MCP canonical-message view over
-  SSH. Runtime MCP registrations and refresh/backup scheduling are still pending.
+  SSH. Reef's OpenCode global registration now works natively and through Paseo;
+  other runtime registrations and refresh/backup scheduling are still pending.
 
 ## CASS access and operating facts
 
@@ -67,6 +91,59 @@ runtime's user-level registration through its existing source manager and verify
 Paseo inheritance. OpenCode's global config is chezmoi-managed; use its source
 template and a scoped apply. Read the V2 MCP/config docs before editing; do not
 guess V2 syntax or use the published V1 schema to infer it.
+
+### Runtime access checkpoint — 2026-10-04
+
+- Added `mcp.servers.cass` to the Reef-only branch of
+  `~/.local/share/chezmoi/dot_config/opencode/opencode.json.tmpl`, using the exact
+  local command above. Applied only `~/.config/opencode/opencode.json`; unrelated
+  model/provider/Gbrain settings and other hosts' rendering are unchanged.
+- The running Paseo agent picked up the six CASS tools at a tool boundary. It
+  searched all four named sources and read the canonical first user message from
+  **Paseo Desktop setup for rswift** (`reef-rswift`, conversation `1508`, message
+  `1`, native ID `ses_00cd5f527ffeteXXabrqVaQE4w`). Status confirmed five completed
+  queries, one canonical read, one retained lexical reader, and no maintenance.
+- A separate native `opencode run` using `openai/gpt-6.1-sol` independently called
+  CASS MCP search/view for the same 152-byte user message. Native `opencode mcp
+  list` reports CASS connected. Neither OpenCode nor Paseo needed a restart or
+  explicit location reload; legacy services were untouched.
+- Private proof is under
+  `/home/rswift/.local/share/agent-migration/2026-10-04-cass-runtime-access/`:
+  `paseo-tool-proof.json`, `native-run.jsonl`, `native-run-metadata.json`, and
+  `manifest.json`. Paseo session: `ses_ef79730e0ffeDU1RsTLw0q4vNn`; native smoke
+  session: `ses_ef7909836ffeDK7s111SDkb8oB`. These are access checks against the
+  existing frozen exports, not new ingestion or proof of archive freshness.
+
+### Native-only collection direction — 2026-10-04
+
+Ryan clarified that ongoing collection should use CASS natively, without a
+custom export-refresh integration. He expects to continue local development on
+other machines, so automatic multi-host collection is a requirement, not merely
+an optional legacy-import feature; a Reef-only solution is insufficient.
+CASS 0.10's OpenCode connector directly opens
+the native store read-only and supports V2 `session_v2`/`session_message` tables;
+the earlier bootstrap ingest already found Reef's live local histories. Its
+`schedule` commands provide incremental/nightly OS timers. Validate current live
+ingestion in an isolated archive before changing canonical sources or timers.
+Preserved session-only exports remain migration evidence, not a proposed ongoing
+export pipeline; do not remove or replace them.
+
+Native SSH sync copies configured files via rsync/scp/SFTP; inspected 0.10 source
+does not make coherent session-only snapshots before transfer. Therefore safe
+automatic collection of active remote OpenCode databases is not established.
+Do not silently copy credential-bearing databases or introduce a custom wrapper
+to bridge that gap. Keep remote/legacy history preserved while deciding whether
+native upstream support or an explicitly accepted operating constraint is needed.
+An October 4 upstream check still finds `v0.10.0` as the latest stable release;
+no newer released native snapshot transport was identified. An upstream support
+question/feature request is preferable to maintaining local glue, but Ryan asked
+to **defer that upstream follow-up on October 4**. Do not publish an issue or
+install a custom workaround. Multi-host collection remains a requirement, not
+a completed capability; existing remote snapshots remain searchable and automatic
+live remote refresh is still undeployed. Local validation and other consolidation
+work can proceed independently.
+Routine off-Reef backup coverage is still separate; CASS also has native logical
+`archive export`/`verify` commands, but its refresh timers are not off-host backups.
 
 Sources config: `~/.config/cass/sources.toml` on Reef, presently unmanaged by
 chezmoi. Names: `reef-rswift`, `reef-opencode`, `marlin-rswift`, `tortoise-rswift`.
@@ -105,24 +182,15 @@ assistant messages explain the verified gaps against the four snapshot counts.
 
 Remaining closeout, after making CASS useful in the daily workflow:
 
-- Preserve/compare the **364 older JSON session IDs** outside all four V2 API
-  inventories, investigate legacy-account JSON storage, and inspect Marlin's
-  existing CASS archive without indexing over it. Check possible changed-ID copies.
+- **Resolved 2026-10-10:** the legacy history is archived in CASS (no native import).
+  The 364 older JSON session IDs match Reef `rswift`'s; the live legacy store had
+  no changes since the Oct 4 snapshot. The HTTP-500 histories, changed-ID copies,
+  and Marlin's old CASS archive were closed as not needed. The legacy accounts and
+  `opencode-reef` are retired. See [consolidation status](consolidation-status.md).
 - Arrange source refresh, collection, indexing, and routine backup coverage.
-- Ask Ryan which histories need native import versus searchable archival. Do not
-  merge or discard native stores automatically. A longer legacy session contains
-  a real continuation; another legacy transcript replaces Marlin's embedded PDF
-  with migration text, so neither store uniformly supersedes the other.
-- Two HTTP-500 API histories have identical stored message arrays across Marlin
-  and both Reef accounts (146 and 12 messages). Stored comparison is resolved;
-  native API readability is not. Both are searchable in CASS.
-- Finish native-origin import into Paseo, a Paseo tool turn after reverse handoff,
-  permissions/interruption, and OpenCode attachment checks.
-- Choose the replacement native remote-access path, update the chezmoi-managed
-  `opencode-reef` launchers, then obtain authorization to retire legacy OpenCode.
-  They still target the `opencode` account's listener on port 4096.
-- Reconcile managed service/config sources and backups. Then continue dedicated
-  Codex → Claude → Gemini/`agy`, toolkit deployment, and the wider approved roadmap.
+- Finish Paseo permissions/interruption and OpenCode attachment checks.
+- Reconcile managed service/config sources and backups. Then continue with
+  toolkit deployment (Codex, Claude, Antigravity, and Cursor all work), and the wider approved roadmap.
 
 ## Durable evidence and unfinished source work
 
@@ -155,27 +223,34 @@ These are migration recovery assets; routine backup coverage still needs review.
 
 Repository/worktree cautions:
 
-- `agent-tools`: the published handoff documents describe the parallel toolkit
-  workstream, but its implementation remains uncommitted on **Marlin**. Its tracked
-  patch/untracked archive are in the private bundle. Source checks were previously
-  green; deployment and behavioral verification remain open. Do not assume a clean
-  Reef clone already contains the consolidated seven-skill toolkit.
+- `agent-tools`: the published handoff commit contains only migration documents.
+  On October 6, Marlin's live uncommitted toolkit work was reconciled into this
+  Reef checkout, preserving the newer Reef docs. Both hosts still use base commit
+  `a3ee9a1`; the seven-skill implementation remains uncommitted on both. Reef's
+  structural/installer checks pass; deployment and behavioral verification remain
+  open. The original private recovery bundle remains available, and the status
+  document records the fresh source snapshot and pre-sync Reef recovery files.
 - Marlin `~/dev/tools/paseo`: dirty, diverged `ryan/opencode-external-server`
   experiment. Preserved privately; it is not the deployed upstream backend and
   should not be revived just to achieve live synchronization.
-- Reef `/srv/dev/homelab`: dirty branch with unrelated staged and unstaged work,
-  including another version of the old runbook. Preserved in place. The clean
+- Reef `~/dev/homelab` (moved from `/srv/dev/homelab` on 2026-10-10): dirty branch
+  with unrelated staged and unstaged work, including another version of the old
+  runbook. The dedicated
   handoff checkout is `/home/rswift/dev/homelab-coding-handoff`; its
   `runbooks/reef-coding-services-2026-10.md` is the current operational checkpoint.
-- Reef has another `agent-tools` clone at `/srv/dev/personal/agent-tools`. Use the
-  `/home/rswift/dev/personal/agent-tools` checkout above for this continuation.
+  This dedicated checkout now has the scoped continuation runbook edit.
+- `/srv/dev` was retired on 2026-10-10; all development lives under `/home/rswift/dev`.
+  Use the `/home/rswift/dev/personal/agent-tools` checkout for this continuation.
+- This continuation leaves the CASS template edit uncommitted in Reef's chezmoi
+  tree, plus documentation edits in this checkout and the dedicated homelab
+  handoff checkout. No commits or pushes were made; no other targets were applied.
 
 ## Operating boundaries
 
 - **Never restart the main Paseo daemon on port 6767 without Ryan's permission.**
   It owns the running agents, including potentially this one. Timeouts alone do
-  not justify a restart. Native imports, legacy shutdown, and global MCP changes
-  were not performed before this handoff.
+  not justify a restart. Native imports and legacy shutdown remain unperformed;
+  only the CASS global registration described above has since been applied.
 - Use existing credentials and HTTPS Git remotes; never print secrets or copy
   another account's authentication state. Keep databases/transcripts out of Git.
 - Preserve other work. Avoid broad stashes, resets, cleans, or indiscriminate
