@@ -51,26 +51,55 @@ Start with [the handoff](paseo-handoff.md).
    2026-10-11 to 10-17; it now covers `~/dev`, `~/.paseo`, OpenCode data, and the
    CASS source exports.
 
-### Paseo remote access and automation (added 2026-10-18)
+### Paseo remote access and automation (researched 2026-10-18)
 
-1. **Relay for phone access without Tailscale.** `~/.paseo/config.json` already has
-   `daemon.relay.enabled: true` and a daemon password; the phone currently connects
-   over Tailscale. Audit first: what passes through Paseo's hosted relay (traffic is
-   documented as end-to-end encrypted), pairing-link and QR handling, the daemon
-   password (0.10 began checking it on relay connections; a later release will
-   require it), and revoking a paired device. Then pair with `paseo daemon pair` and
-   confirm the phone works with Tailscale off.
-2. **Self-host Paseo Hub** (`public-docs/hub/self-hosting/`). Hub sits above
-   daemons: triggers from GitHub, Slack, and Discord, a record of events, and a team
-   view. Decide where it runs (Reef as `rswift`, or a dedicated account like
-   Factory) and how it is exposed. Slack and GitHub deliver webhooks, so Hub needs
-   a **public HTTPS endpoint**, unlike everything else on Reef, which is
-   tailnet-only. That calls for an ingress and security decision, for example
-   Tailscale Funnel or a Cloudflare tunnel limited to Hub's webhook paths.
-3. **Slack bot**, which depends on 2: create the Slack app
-   (`hub/self-hosting/slack-app.md`), connect it to Hub, and define triggers
-   (`hub/triggers/slack.md`, with `from_users` set to Ryan's Slack user ID) so
-   mentioning the bot starts a Paseo agent on Reef.
+1. **Relay for phone access without Tailscale.** `daemon.relay.enabled` is already
+   `true`, and a daemon password is set; recent daemon logs show only direct
+   (Tailscale) connections. Security model (Paseo `security.md`): the relay
+   (`relay.paseo.sh:443`, open-source `getpaseo/paseo-relay`) is treated as
+   untrusted. The phone and daemon complete a Curve25519 handshake, and traffic is
+   end-to-end encrypted with NaCl box; the relay sees only IPs, timing, sizes, and
+   session IDs. The **pairing link/QR is the trust anchor** (it carries the
+   daemon's public key), and since 0.10 the daemon password is also checked on
+   relay connections. There is **no per-device revocation**: revoking means
+   rotating `~/.paseo/daemon-keypair.json` (re-pair every client) and the
+   password. The relay endpoint is configurable (restart required) if self-hosting
+   the relay is ever preferred.
+2. **Self-host Paseo Hub** (`@getpaseo/hub` 0.10.0, published 2026-09-29). Run it
+   with `npx @getpaseo/hub` (embedded PGlite under `~/.local/share/paseo-hub`) or
+   with Compose plus PostgreSQL. **Slack Socket Mode needs no public endpoint**,
+   so Hub can stay tailnet-only; only GitHub webhook triggers need public HTTPS.
+   Daemons enroll with `paseo hub login <url>` and `paseo hub connect`; running
+   agents needs a separate `hub.execute` grant (default no). Hub does not sandbox
+   agents: Slack-triggered runs act with the daemon's authority, so pin
+   `from_users`, `workspace`, and `channels`, scope `cwd`, and consider a
+   dedicated user if a stronger boundary is needed. Plan a systemd user unit and
+   include `~/.local/share/paseo-hub` in Reef's backup.
+3. **Slack bot**, which depends on 2. In Hub, go to **Apps → Slack (Socket Mode)**,
+   create the app from Hub's manifest (App-level token with `connections:write`
+   plus the Bot token), `/invite @Paseo`, then run `paseo hub init` to write and
+   deploy a `slack.mention` trigger limited to Ryan's member ID. Decide on the
+   workspace: personal, or MLH (which may need admin approval).
+
+### CASS refresh (researched 2026-10-18)
+
+The archive was last indexed about 13 days ago. CASS 0.10 has a built-in
+scheduler: `cass schedule install` writes `cass-incremental` (every N minutes) and
+`cass-nightly` systemd user units. Its generated `ExecStart` pins the versioned
+Homebrew Cellar path, so add a drop-in pointing at
+`/home/linuxbrew/.linuxbrew/bin/cass`. Run one manual `cass index` first to
+validate direct collection from Reef's live OpenCode store; that also refreshes the
+default `local` source. The frozen `reef-rswift` export source then becomes a
+duplicate.
+
+### Retire `toolhive` (inventoried 2026-10-18)
+
+The `toolhive` account runs only an idle user manager with lingering enabled; no
+services, containers, or listeners, and its home was last modified 2026-05-25.
+Retire it like `opencode`/`paseo`. Its chezmoi references (`~/.toolhive/bin` on
+PATH, the `toolhive-gui` link handler, the Marlin panel launcher) belong to the
+ToolHive desktop app on Ryan's own account; remove them only if the app is no
+longer used.
 
 ### Toolkit
 
