@@ -81,16 +81,19 @@ Start with [the handoff](paseo-handoff.md).
    deploy a `slack.mention` trigger limited to Ryan's member ID. Decide on the
    workspace: personal, or MLH (which may need admin approval).
 
-### CASS refresh (researched 2026-10-18)
+### CASS refresh — done 2026-10-18
 
-The archive was last indexed about 13 days ago. CASS 0.10 has a built-in
-scheduler: `cass schedule install` writes `cass-incremental` (every N minutes) and
-`cass-nightly` systemd user units. Its generated `ExecStart` pins the versioned
-Homebrew Cellar path, so add a drop-in pointing at
-`/home/linuxbrew/.linuxbrew/bin/cass`. Run one manual `cass index` first to
-validate direct collection from Reef's live OpenCode store; that also refreshes the
-default `local` source. The frozen `reef-rswift` export source then becomes a
-duplicate.
+- A manual `cass index` validated direct collection from Reef's live OpenCode store
+  (27 new conversations after 13 days without indexing).
+- `cass schedule install --no-semantic --interval-mins 30` installed the
+  `cass-incremental` (30-minute) and `cass-nightly` (03:00) user timers. Their
+  `ExecStart` was repointed from the versioned Homebrew Cellar path to
+  `/home/linuxbrew/.linuxbrew/bin/cass`; re-check after any reinstall. `rswift`
+  lingers, so the timers run while logged out.
+- Widened `~/.config/cass/sources.toml` from OpenCode-only to OpenCode, Claude Code,
+  Codex, Cursor, and Antigravity (backup: `sources.toml.bak-20261018`). The catch-up
+  index found all five, and current Claude Code sessions are searchable.
+- Optional: `cass models install` for semantic search; lexical search works now.
 
 ### Retire `toolhive` (inventoried 2026-10-18)
 
