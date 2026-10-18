@@ -46,8 +46,10 @@ Start with [the handoff](paseo-handoff.md).
    project (`agent-tools` suggested). Other lingering accounts: `toolhive`, `wharfi` (Caddy).
 5. **Service configuration and backups.** Reconcile managed service/config sources
    and routine backup coverage for Paseo uploads and service configuration. The
-   October runbook in `~/dev/homelab-coding-handoff` records current state; the
-   dirty `~/dev/homelab` branch still has historical edits.
+   October runbook in `~/dev/homelab` records current state. Reef's nightly restic
+   backup was repointed at the rswift layout on 2026-10-18, after failing
+   2026-10-11 to 10-17; it now covers `~/dev`, `~/.paseo`, OpenCode data, and the
+   CASS source exports.
 
 ### Toolkit
 

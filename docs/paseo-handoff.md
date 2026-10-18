@@ -233,12 +233,10 @@ Repository/worktree cautions:
 - Marlin `~/dev/tools/paseo`: dirty, diverged `ryan/opencode-external-server`
   experiment. Preserved privately; it is not the deployed upstream backend and
   should not be revived just to achieve live synchronization.
-- Reef `~/dev/homelab` (moved from `/srv/dev/homelab` on 2026-10-10): dirty branch
-  with unrelated staged and unstaged work, including another version of the old
-  runbook. The dedicated
-  handoff checkout is `/home/rswift/dev/homelab-coding-handoff`; its
-  `runbooks/reef-coding-services-2026-10.md` is the current operational checkpoint.
-  This dedicated checkout now has the scoped continuation runbook edit.
+- Reef has one `homelab` checkout, `~/dev/homelab`, on `main` (HTTPS). Its
+  `runbooks/reef-coding-services-2026-10.md` is the operational checkpoint. On
+  2026-10-18 it replaced the old dirty `ryan/reef-coding-client` checkout, after
+  that checkout's Beluga and Hermes media work was moved onto `main`.
 - `/srv/dev` was retired on 2026-10-10; all development lives under `/home/rswift/dev`.
   Use the `/home/rswift/dev/personal/agent-tools` checkout for this continuation.
 - This continuation leaves the CASS template edit uncommitted in Reef's chezmoi
