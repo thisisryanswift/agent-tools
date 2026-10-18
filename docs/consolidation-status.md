@@ -51,6 +51,27 @@ Start with [the handoff](paseo-handoff.md).
    2026-10-11 to 10-17; it now covers `~/dev`, `~/.paseo`, OpenCode data, and the
    CASS source exports.
 
+### Paseo remote access and automation (added 2026-10-18)
+
+1. **Relay for phone access without Tailscale.** `~/.paseo/config.json` already has
+   `daemon.relay.enabled: true` and a daemon password; the phone currently connects
+   over Tailscale. Audit first: what passes through Paseo's hosted relay (traffic is
+   documented as end-to-end encrypted), pairing-link and QR handling, the daemon
+   password (0.10 began checking it on relay connections; a later release will
+   require it), and revoking a paired device. Then pair with `paseo daemon pair` and
+   confirm the phone works with Tailscale off.
+2. **Self-host Paseo Hub** (`public-docs/hub/self-hosting/`). Hub sits above
+   daemons: triggers from GitHub, Slack, and Discord, a record of events, and a team
+   view. Decide where it runs (Reef as `rswift`, or a dedicated account like
+   Factory) and how it is exposed. Slack and GitHub deliver webhooks, so Hub needs
+   a **public HTTPS endpoint**, unlike everything else on Reef, which is
+   tailnet-only. That calls for an ingress and security decision, for example
+   Tailscale Funnel or a Cloudflare tunnel limited to Hub's webhook paths.
+3. **Slack bot**, which depends on 2: create the Slack app
+   (`hub/self-hosting/slack-app.md`), connect it to Hub, and define triggers
+   (`hub/triggers/slack.md`, with `from_users` set to Ryan's Slack user ID) so
+   mentioning the bot starts a Paseo agent on Reef.
+
 ### Toolkit
 
 1. Inventory skill discovery for the Reef execution account and the runtimes in
