@@ -42,7 +42,7 @@ Start with [the handoff](paseo-handoff.md).
    (2026-10-15):** how `factory` builds and upgrades now that it can't read
    `/home/rswift`. Recommendation: have `factory` build from its own clone of the
    new `reef-factory` repository (extracted from homelab on 2026-10-15).
-   Also open: backup health, newer Factory releases, and choosing a first real
+   Backup health verified 2026-10-18 (last success 03:00, not stale). Also open: newer Factory releases, and choosing a first real
    project (`agent-tools` suggested). Other lingering accounts: `toolhive`, `wharfi` (Caddy).
 5. **Service configuration and backups.** Reconcile managed service/config sources
    and routine backup coverage for Paseo uploads and service configuration. The
@@ -95,14 +95,12 @@ Start with [the handoff](paseo-handoff.md).
   index found all five, and current Claude Code sessions are searchable.
 - Optional: `cass models install` for semantic search; lexical search works now.
 
-### Retire `toolhive` (inventoried 2026-10-18)
+### Retire `toolhive` — done 2026-10-18
 
-The `toolhive` account runs only an idle user manager with lingering enabled; no
-services, containers, or listeners, and its home was last modified 2026-05-25.
-Retire it like `opencode`/`paseo`. Its chezmoi references (`~/.toolhive/bin` on
-PATH, the `toolhive-gui` link handler, the Marlin panel launcher) belong to the
-ToolHive desktop app on Ryan's own account; remove them only if the app is no
-longer used.
+The idle `toolhive` account (no services, containers, sudoers, or system units) is
+deleted with its home. Remaining lingering accounts: `factory`, `rswift`, `wharfi`
+(Caddy). The ToolHive desktop app's references on Ryan's own account stay in
+chezmoi while the app is used.
 
 ### Toolkit
 
