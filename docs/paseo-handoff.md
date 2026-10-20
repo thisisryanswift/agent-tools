@@ -1,7 +1,7 @@
 # Continue the Reef agent consolidation from Paseo
 
 Handoff started **2026-10-04**, from the Marlin OpenCode session to agents running
-as `rswift` on Reef through Paseo; last updated **2026-10-10**. This is a working
+as `rswift` on Reef through Paseo; last updated **2026-10-20**. This is a working
 checkpoint, not a new design exercise. Ryan is using the setup while completing it.
 The current snapshot and open work are in [consolidation status](consolidation-status.md);
 dated evidence is in [October 2026 checkpoints](checkpoints-2026-10.md).
@@ -12,8 +12,10 @@ Use `/home/rswift/dev/personal/agent-tools` on Reef as the Paseo workspace. Read
 this document and [consolidation status](consolidation-status.md); consult the
 [approved plan](personal-agent-toolkit-plan.md) for wider context as needed.
 
-**Next useful work: native local Reef CASS ingestion/scheduler validation and a
-backup review.** The legacy `opencode`/`paseo` accounts and `opencode-reef` were
+**Next useful work: the toolkit workstream** (skill discovery inventory, the
+`brainstorming` trigger, deployment, Browser Harness verification), then the
+remaining OpenCode-in-Paseo checks. CASS scheduling and Reef backups were done on
+2026-10-18. The legacy `opencode`/`paseo` accounts and `opencode-reef` were
 retired on 2026-10-10; Paseo is the coding interface. The upstream follow-up about safe
 live remote OpenCode collection is **deferred by Ryan (2026-10-04)**. Ryan wants
 no maintained custom integrations; do not schedule the migration export helper.
@@ -225,10 +227,10 @@ Repository/worktree cautions:
 
 - `agent-tools`: the published handoff commit contains only migration documents.
   On October 6, Marlin's live uncommitted toolkit work was reconciled into this
-  Reef checkout, preserving the newer Reef docs. Both hosts still use base commit
-  `a3ee9a1`; the seven-skill implementation remains uncommitted on both. Reef's
-  structural/installer checks pass; deployment and behavioral verification remain
-  open. The original private recovery bundle remains available, and the status
+  Reef checkout, preserving the newer Reef docs. The seven-skill implementation
+  was committed and pushed as `3ad2946` on 2026-10-15; Marlin picks it up with a
+  pull. Reef's structural/installer checks pass; deployment and behavioral
+  verification remain open. The original private recovery bundle remains available, and the status
   document records the fresh source snapshot and pre-sync Reef recovery files.
 - Marlin `~/dev/tools/paseo`: dirty, diverged `ryan/opencode-external-server`
   experiment. Preserved privately; it is not the deployed upstream backend and
@@ -239,9 +241,8 @@ Repository/worktree cautions:
   that checkout's Beluga and Hermes media work was moved onto `main`.
 - `/srv/dev` was retired on 2026-10-10; all development lives under `/home/rswift/dev`.
   Use the `/home/rswift/dev/personal/agent-tools` checkout for this continuation.
-- This continuation leaves the CASS template edit uncommitted in Reef's chezmoi
-  tree, plus documentation edits in this checkout and the dedicated homelab
-  handoff checkout. No commits or pushes were made; no other targets were applied.
+- As of 2026-10-20, `agent-tools`, chezmoi, and `homelab` on Reef are clean and in
+  sync with `origin/main`.
 
 ## Operating boundaries
 

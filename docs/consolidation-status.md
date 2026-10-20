@@ -1,6 +1,6 @@
 # Consolidation status
 
-Updated **2026-10-10**. This is the current snapshot of the Reef agent setup and
+Updated **2026-10-20**. This is the current snapshot of the Reef agent setup and
 toolkit consolidation, tracked against the [approved plan](personal-agent-toolkit-plan.md).
 Dated evidence from the October 1–4 backend rollout and session-history audit is in
 [October 2026 checkpoints](checkpoints-2026-10.md). Resuming through Paseo on Reef?
@@ -14,40 +14,41 @@ Start with [the handoff](paseo-handoff.md).
 | Coding providers in Paseo | OpenCode 2.0.21 (`openai/gpt-6.1-sol` via OpenAI OAuth), Claude, and Codex (user-confirmed 2026-10-06), Antigravity/`agy` and Cursor (smoke-tested 2026-10-10). OpenCode Go, GLM, Copilot, and Devin are not yet covered. |
 | Clients | Marlin, Tortoise, and Android user-confirmed against Reef. Desktop `0.11.0-beta.3` is installed on Marlin, Tortoise, and Reef; Reef's GUI check awaits physical access. |
 | Native ↔ Paseo continuity | Works with manual **Reload agent** (accepted); live sync deferred. Native-origin import, permissions/interruption, and attachment checks are still open. |
-| Session history (CASS) | Reef is the canonical archive (CASS 0.10.0). All four preserved snapshots are indexed and searchable over SSH and from native/Paseo OpenCode. Scheduled refresh, backups, and older-store coverage are open. Safe live remote-DB collection is **deferred by Ryan** (2026-10-04); no custom export pipeline. |
+| Session history (CASS) | Reef is the canonical archive (CASS 0.10.0). All four preserved snapshots are indexed and searchable over SSH and from native/Paseo OpenCode. CASS's own scheduler refreshes it (every 30 minutes, plus nightly) across OpenCode, Claude Code, Codex, Cursor, and Antigravity, and Reef's nightly restic backup covers it. Safe live remote-DB collection is **deferred by Ryan** (2026-10-04); no custom export pipeline. |
 | Legacy accounts | **Retired 2026-10-10.** The `opencode` and `paseo` accounts, their services, the `:4096` server, and the `opencode-reef` launcher are gone. The history is archived in CASS. Ryan uses Paseo for coding; plain `opencode` on Reef shares Paseo's store. |
-| Toolkit source | Seven skills, installer, checker/tests, catalog, and provenance in this checkout; `make check` and `make test` pass. **Uncommitted.** Consumer deployment and runtime verification are open. |
+| Toolkit source | Seven skills, installer, checker/tests, catalog, and provenance in this checkout; `make check` and `make test` pass. Committed (`3ad2946`, 2026-10-15). Consumer deployment and runtime verification are open. |
 | Dev layout | `/srv/dev` retired 2026-10-10; all development lives under `/home/rswift/dev`. |
 | Hermes | General assistant on **Lobster**. Reef keeps only the install for the `hermes desktop` client; no local runtime or sessions. |
 | Mastra Factory | Retired 2026-10-20; `thisisryanswift/reef-factory` archived as a record. |
+| Paseo remote access | Phone relay, self-hosted Hub (`hub.reef.wharfi.sh`), and the Slack bot work (2026-10-20). |
 | MLH Core Services | On-demand test environment in `~/dev/mlh/core-services`: `mlh-up` and `mlh-down` (Reef-only via chezmoi). See its `STACK.md`. |
 
 ## Next work
 
 ### Backend closeout
 
-1. **CASS operations.** Validate direct native Reef collection and CASS's built-in
-   scheduler, then arrange routine backups. Ryan wants no custom export-refresh
-   integration, and no upstream issue will be published while that follow-up is
-   deferred.
-2. **OpenCode checks in Paseo.** Permissions/interruption and an OpenCode
+1. **OpenCode checks in Paseo.** Permissions/interruption and an OpenCode
    attachment. Native-origin import matters only for sessions started with plain
    `opencode` on Reef.
-3. **Reef GUI check** when physically at Reef. Automatic native ↔ Paseo sync and
+2. **Reef GUI check** when physically at Reef. Automatic native ↔ Paseo sync and
    remote-desktop setup are deferred by Ryan.
-4. **Mastra Factory — retired 2026-10-20.** It had no real project, and Paseo Hub now
-   covers GitHub/Slack-triggered agents, so Ryan chose to remove it rather than
-   carry about 1.1 GB of RAM, daily backups, and a dedicated account. Removed: its
-   Caddy routes (chezmoi). Ryan's steps: remove the `factory` account, home, and
-   `/srv/factory` and `/data/factory`; delete the "reef factory" GitHub App and the
-   `reef-factory-demo-a`/`-b` repos; archive `thisisryanswift/reef-factory` (README
-   marked retired). Remaining lingering accounts: `rswift`, `wharfi` (Caddy).
-5. **Service configuration and backups.** Reconcile managed service/config sources
-   and routine backup coverage for Paseo uploads and service configuration. The
-   October runbook in `~/dev/homelab` records current state. Reef's nightly restic
-   backup was repointed at the rswift layout on 2026-10-18, after failing
-   2026-10-11 to 10-17; it now covers `~/dev`, `~/.paseo`, OpenCode data, and the
-   CASS source exports.
+3. **Service unit sources.** Backups are done: Reef's nightly restic backup was
+   repointed at the rswift layout on 2026-10-18, after failing 2026-10-11 to 10-17,
+   and covers `~/dev`, `~/.paseo` (including uploads and config), OpenCode data,
+   the CASS source exports, and `~/.local/share/paseo-hub`. Still open: the live
+   `paseo.service` user unit is not chezmoi-managed (`paseo-hub.service` is), and
+   chezmoi still ships the pre-scheduler `cass`/`cass-sync` units, which are
+   disabled on Reef. Adopt the first and retire the second.
+
+### Mastra Factory — retired 2026-10-20
+
+It had no real project, and Paseo Hub now covers GitHub/Slack-triggered agents, so
+Ryan chose to remove it rather than carry about 1.1 GB of RAM, daily backups, and a
+dedicated account. Removed and verified 2026-10-20: its Caddy routes (chezmoi), the
+`factory` account and home, `/srv/factory` and `/data/factory`, the "reef factory"
+GitHub App, and the `reef-factory-demo-a`/`-b` repos; `thisisryanswift/reef-factory`
+is archived (README marked retired). `/srv` is now empty. Remaining lingering
+accounts: `rswift`, `wharfi` (Caddy).
 
 ### Paseo remote access and automation (researched 2026-10-18)
 
@@ -85,8 +86,8 @@ Start with [the handoff](paseo-handoff.md).
 3. **Slack bot — done 2026-10-20.** "Ryan's Paseo" in MLH's workspace over Socket
    Mode (scopes: `app_mentions:read`, `channels:history`, `groups:history`,
    `chat:write`, `files:read`, `reactions:write`, `users:read`). The `slack-help`
-   trigger (`~/dev/mlh/zoho-creator-backup/.paseo/triggers/slack-help.yml`, not yet
-   committed there) fires only for Ryan (`U0C7WS2JZ`) in `C0BNR0P6HGW`, running
+   trigger (`~/dev/mlh/zoho-creator-backup/.paseo/triggers/slack-help.yml`, committed
+   there 2026-10-20; that repo's push waits on reconciling its diverged `main`) fires only for Ryan (`U0C7WS2JZ`) in `C0BNR0P6HGW`, running
    Claude Opus 5.5 in `auto` mode with `cwd` in zoho-creator-backup, which Ryan
    chose knowingly; the repo has only production Zoho. Use `mode: default` if it
    should ask before acting. Tested end to end. Original plan: In Hub, go to **Apps → Slack (Socket Mode)**,
@@ -112,8 +113,8 @@ Start with [the handoff](paseo-handoff.md).
 ### Retire `toolhive` — done 2026-10-18
 
 The idle `toolhive` account (no services, containers, sudoers, or system units) is
-deleted with its home. Remaining lingering accounts: `factory`, `rswift`, `wharfi`
-(Caddy). The ToolHive desktop app's references on Ryan's own account stay in
+deleted with its home. Remaining lingering accounts at the time: `factory`, `rswift`, `wharfi`
+(Caddy); `factory` was removed 2026-10-20. The ToolHive desktop app's references on Ryan's own account stay in
 chezmoi while the app is used.
 
 ### Toolkit
@@ -127,7 +128,6 @@ chezmoi while the app is used.
 3. Verify the browser package/wrapper, profile reuse, worker cleanup, workspace
    access, and OpenCode V2 setup on the actual browser host.
 4. Port the selected evaluation cases and exercise real skills.
-5. Commit this checkout's source and documentation changes (pending Ryan).
 
 ## Completed
 

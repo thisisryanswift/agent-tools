@@ -4,11 +4,12 @@ Status: OpenCode-first revision approved in Crit after round 3 on 2026-10-01
 (session `0358398a35ac`), superseding the earlier baseline approved in session
 `0b48471eca18`. Open questions remain where no explicit choice is recorded below.
 
-Last reconciled: **2026-10-10**, using deployment checks from October 1–3,
+Last reconciled: **2026-10-20**, using deployment checks from October 1–3,
 four-store session metadata/transcript comparisons on October 4, Ryan's
 confirmation of normal Paseo use from Tortoise plus live Marlin-to-Reef toolkit
 source reconciliation on October 6, the Paseo 0.11.0 upgrade on October 7, and the
-provider, `/srv/dev`, and Hermes changes of October 9–10. The current snapshot is in
+provider, `/srv/dev`, and Hermes changes of October 9–10, and the CASS, backup,
+Paseo relay/Hub, and Factory changes of October 18–20. The current snapshot is in
 [consolidation status](consolidation-status.md).
 
 For the fresh Reef/Paseo session, use [the continuation handoff](paseo-handoff.md).
@@ -33,16 +34,16 @@ Ryan's direction. Deployment claims below are limited to the checks described.
 
 | Workstream | Recorded status |
 | --- | --- |
-| Reef backend and account migration | Upstream Paseo `0.11.0` (npm package in `~/.local/share/paseo`, since 2026-10-07) runs as `rswift` with Node `26.10.0` and canonical OpenCode `2.0.21`. The old `paseo` service is stopped/disabled; legacy OpenCode retirement is still pending. |
+| Reef backend and account migration | Upstream Paseo `0.11.0` (npm package in `~/.local/share/paseo`, since 2026-10-07) runs as `rswift` with Node `26.10.0` and canonical OpenCode `2.0.21`. The legacy `opencode` and `paseo` accounts were retired on 2026-10-10. |
 | OpenCode and client access | OpenAI OAuth with `openai/gpt-6.1-sol` passed a tool turn. Marlin, Android, and Tortoise are user-confirmed working; Tortoise was confirmed October 6. Desktop `0.11.0-beta.3` is installed on Marlin, Tortoise, and Reef; Reef's GUI check remains deferred until physical access. |
 | Native/Paseo continuity | Existing Paseo history and native continuation work with **Reload agent** on return. Ryan accepted manual reload; automatic live synchronization is deferred. Native-origin import and the remaining focused checks are still open. |
-| Session history and legacy cleanup | Reef CASS `0.10.0` indexes all four preserved session-only snapshots; SSH and user-global native/Paseo OpenCode MCP search/view pass. Other runtime registrations, older-store coverage, and scheduled refresh/backups remain open. Native history merges and legacy shutdown remain paused. |
-| Toolkit source consolidation | Seven selected skills and installer/source changes are now in both Marlin and Reef working trees, reconciled October 6. Reef checks pass; source changes remain uncommitted. Consumer deployment and runtime verification remain open in workstream B. |
+| Session history and legacy cleanup | Reef CASS `0.10.0` indexes all four preserved session-only snapshots; SSH and user-global native/Paseo OpenCode MCP search/view pass. CASS's scheduler indexes OpenCode, Claude Code, Codex, Cursor, and Antigravity (2026-10-18), and Reef's nightly backup covers it. Legacy history is archived in CASS, not imported. |
+| Toolkit source consolidation | Seven selected skills and installer/source changes are now in both Marlin and Reef working trees, reconciled October 6. Reef checks pass; committed as `3ad2946` (2026-10-15). Consumer deployment and runtime verification remain open in workstream B. |
 | Broader integrations | Ryan confirmed direct Codex and Claude connections working on October 6. Antigravity/`agy` and Cursor work through Paseo as of October 10 (smoke tests). Hermes context sharing, browser verification, Entire, and additional execution hosts remain follow-on work. |
 
 The actionable closeout checklist is in [section 6](#6-delivery-sequence). Resume
-with Reef-owned CASS refresh/backup coverage, older-store coverage, and possible
-changed-ID copies. Snapshot inspection explains the changed assistant message and
+with the toolkit workstream; CASS refresh/backup coverage is done. Older-store
+coverage and possible changed-ID copies remain low-priority. Snapshot inspection explains the changed assistant message and
 confirms matching stored histories behind the two native API-read failures;
 native readability still needs diagnosis.
 
@@ -655,8 +656,10 @@ Closeout, in current working order:
    uploads and effective service configuration. The published October runbook and
    continuation handoff record current state; the dirty Reef homelab branch's
    historical edits remain preserved. Toolkit implementation changes were
-   reconciled from live Marlin into this Reef checkout on October 6 and remain
-   uncommitted on both hosts, with private recovery snapshots retained.
+   reconciled from live Marlin into this Reef checkout on October 6 and committed
+   on October 15. Backups were repointed on October 18 (see
+   [consolidation status](consolidation-status.md)); the `paseo.service` unit
+   source remains open.
 
 Completion: a version-recorded Reef backend, usable OpenCode V2 with Ryan's
 intended model access, four working Paseo clients, and demonstrated continuity
