@@ -19,6 +19,7 @@ Start with [the handoff](paseo-handoff.md).
 | Toolkit source | Seven skills, installer, checker/tests, catalog, and provenance in this checkout; `make check` and `make test` pass. **Uncommitted.** Consumer deployment and runtime verification are open. |
 | Dev layout | `/srv/dev` retired 2026-10-10; all development lives under `/home/rswift/dev`. |
 | Hermes | General assistant on **Lobster**. Reef keeps only the install for the `hermes desktop` client; no local runtime or sessions. |
+| Mastra Factory | Retired 2026-10-20; `thisisryanswift/reef-factory` archived as a record. |
 | MLH Core Services | On-demand test environment in `~/dev/mlh/core-services`: `mlh-up` and `mlh-down` (Reef-only via chezmoi). See its `STACK.md`. |
 
 ## Next work
@@ -34,16 +35,13 @@ Start with [the handoff](paseo-handoff.md).
    `opencode` on Reef.
 3. **Reef GUI check** when physically at Reef. Automatic native ↔ Paseo sync and
    remote-desktop setup are deferred by Ryan.
-4. **Mastra Factory** (`factory` account, `~/dev/tools/reef-factory` (private repo `thisisryanswift/reef-factory`)). It stays
-   isolated under its own account because it runs autonomous agents with GitHub
-   access and the Podman socket. On 2026-10-10 its Caddy routes, which a Caddy
-   deploy had dropped (they had been appended outside chezmoi), moved into the chezmoi
-   Caddyfile; its docs, scripts, and tests now use `~/dev`. **Deferred by Ryan
-   (2026-10-15):** how `factory` builds and upgrades now that it can't read
-   `/home/rswift`. Recommendation: have `factory` build from its own clone of the
-   new `reef-factory` repository (extracted from homelab on 2026-10-15).
-   Backup health verified 2026-10-18 (last success 03:00, not stale). Also open: newer Factory releases, and choosing a first real
-   project (`agent-tools` suggested). Other lingering accounts: `toolhive`, `wharfi` (Caddy).
+4. **Mastra Factory — retired 2026-10-20.** It had no real project, and Paseo Hub now
+   covers GitHub/Slack-triggered agents, so Ryan chose to remove it rather than
+   carry about 1.1 GB of RAM, daily backups, and a dedicated account. Removed: its
+   Caddy routes (chezmoi). Ryan's steps: remove the `factory` account, home, and
+   `/srv/factory` and `/data/factory`; delete the "reef factory" GitHub App and the
+   `reef-factory-demo-a`/`-b` repos; archive `thisisryanswift/reef-factory` (README
+   marked retired). Remaining lingering accounts: `rswift`, `wharfi` (Caddy).
 5. **Service configuration and backups.** Reconcile managed service/config sources
    and routine backup coverage for Paseo uploads and service configuration. The
    October runbook in `~/dev/homelab` records current state. Reef's nightly restic
