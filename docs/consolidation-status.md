@@ -53,9 +53,12 @@ Start with [the handoff](paseo-handoff.md).
 
 ### Paseo remote access and automation (researched 2026-10-18)
 
-1. **Relay for phone access without Tailscale.** `daemon.relay.enabled` is already
-   `true`, and a daemon password is set; recent daemon logs show only direct
-   (Tailscale) connections. Security model (Paseo `security.md`): the relay
+1. **Relay for phone access without Tailscale — done 2026-10-20.** Ryan paired the
+   phone with `paseo daemon pair`; the Android app adds the relay as a second
+   connection to the existing Reef host after a "changed connection" prompt
+   (check relay `relay.paseo.sh:443` and the key fingerprint). With Tailscale off,
+   the daemon logged relay connections completing the handshake. Pairing links do
+   not expire (server ID, daemon public key, relay endpoint). Security model (Paseo `security.md`): the relay
    (`relay.paseo.sh:443`, open-source `getpaseo/paseo-relay`) is treated as
    untrusted. The phone and daemon complete a Curve25519 handshake, and traffic is
    end-to-end encrypted with NaCl box; the relay sees only IPs, timing, sizes, and
