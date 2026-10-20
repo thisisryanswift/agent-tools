@@ -68,7 +68,13 @@ Start with [the handoff](paseo-handoff.md).
    rotating `~/.paseo/daemon-keypair.json` (re-pair every client) and the
    password. The relay endpoint is configurable (restart required) if self-hosting
    the relay is ever preferred.
-2. **Self-host Paseo Hub** (`@getpaseo/hub` 0.10.0, published 2026-09-29). Run it
+2. **Self-host Paseo Hub — done 2026-10-20.** `paseo-hub.service` (rswift user unit,
+   chezmoi-managed and Reef-only) runs `@getpaseo/hub` 0.10.0 from
+   `~/.local/share/paseo-hub-app` on `127.0.0.1:3100`. Port 3000 is MLH Core's, and
+   Hub's default bind is `0.0.0.0`, so it is pinned to localhost. Its embedded
+   database is in `~/.local/share/paseo-hub` (mode 0700, in Reef's nightly
+   backup). Caddy serves `https://hub.reef.wharfi.sh` tailnet-only. Reef's daemon is
+   connected with `hub.execute`. Research notes: Run it
    with `npx @getpaseo/hub` (embedded PGlite under `~/.local/share/paseo-hub`) or
    with Compose plus PostgreSQL. **Slack Socket Mode needs no public endpoint**,
    so Hub can stay tailnet-only; only GitHub webhook triggers need public HTTPS.
@@ -78,7 +84,14 @@ Start with [the handoff](paseo-handoff.md).
    `from_users`, `workspace`, and `channels`, scope `cwd`, and consider a
    dedicated user if a stronger boundary is needed. Plan a systemd user unit and
    include `~/.local/share/paseo-hub` in Reef's backup.
-3. **Slack bot**, which depends on 2. In Hub, go to **Apps → Slack (Socket Mode)**,
+3. **Slack bot — done 2026-10-20.** "Ryan's Paseo" in MLH's workspace over Socket
+   Mode (scopes: `app_mentions:read`, `channels:history`, `groups:history`,
+   `chat:write`, `files:read`, `reactions:write`, `users:read`). The `slack-help`
+   trigger (`~/dev/mlh/zoho-creator-backup/.paseo/triggers/slack-help.yml`, not yet
+   committed there) fires only for Ryan (`U0C7WS2JZ`) in `C0BNR0P6HGW`, running
+   Claude Opus 5.5 in `auto` mode with `cwd` in zoho-creator-backup, which Ryan
+   chose knowingly; the repo has only production Zoho. Use `mode: default` if it
+   should ask before acting. Tested end to end. Original plan: In Hub, go to **Apps → Slack (Socket Mode)**,
    create the app from Hub's manifest (App-level token with `connections:write`
    plus the Bot token), `/invite @Paseo`, then run `paseo hub init` to write and
    deploy a `slack.mention` trigger limited to Ryan's member ID. Decide on the
