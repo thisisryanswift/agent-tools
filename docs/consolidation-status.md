@@ -25,6 +25,10 @@ Start with [the handoff](paseo-handoff.md).
 
 ## Next work
 
+Every open item below is also a ticket (`tk ready` lists what can start now, and
+`tk ls` lists all of them). Suggested order: the two chezmoi unit fixes, then the
+toolkit epic (`at-iv51`).
+
 ### Backend closeout
 
 1. **OpenCode checks in Paseo.** Permissions/interruption and an OpenCode
