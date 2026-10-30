@@ -7,7 +7,6 @@ check:
 # Copy prompts/ source of truth into skills/*/references/
 sync:
 	cp prompts/review-prompt.md skills/code-review/references/review-prompt.md
-	cp prompts/tests-prompt.md skills/test-coverage/references/tests-prompt.md
 	cp prompts/brainstorming-prompt.md skills/brainstorming/references/brainstorming-prompt.md
 	@echo "Synced."
 

@@ -1,6 +1,35 @@
 # Consolidation status
 
-Updated **2026-10-20**. This is the current snapshot of the Reef agent setup and
+Global tracker/spec defaults and manual Crit are now implemented on Reef for the
+four coding runtimes: established project trackers win, otherwise `tk`; specs
+remain tracker-backed. Crit v0.23.1 is user-installed with a manual-only skill;
+requested reviews use the approved tailnet-only **https://crit.wharfi.sh** target.
+Local mode is only for explicit local requests. Hosted publication, a real human
+comment, and authenticated feedback fetch passed; Ryan closed that test review
+without requiring a revision. There is no automatic review gate or notification loop.
+See [global workflow deployment](global-workflow.md).
+
+## Latest toolkit decision — 2026-10-28
+
+Ryan selected Matt Pocock's pack instead of merging general engineering systems.
+Its 27 promoted skills are pinned and globally discoverable in OpenCode 2.1.4 on
+Reef (16 user-invoked, 11 model-invoked), with unchanged upstream files and scoped
+chezmoi-managed policy boundaries. The same pack is now globally installed for
+Claude Code, Codex, and Antigravity CLI, with catalog checks for Claude/Codex and
+an Antigravity `/ask-matt` expansion smoke test. Full engineering workflows and
+other hosts remain unverified. The old brainstorming-fix
+ticket is superseded, not implemented; Crit support is tracked as `at-nxnl`.
+See [the rollout record](matt-pocock-rollout.md). The infrastructure snapshot below
+remains historical.
+
+Ryan subsequently retired the old test-coverage skill/prompt/adapters. Installer
+tests remain; current personal-source checks cover 7 skills and 2 prompt copies.
+Browser, Wayland, blogging, and isolated-workspace skills are next review candidates
+for Reef-first execution with Marlin/other devices as clients; no specialist runtime
+or desktop configuration was changed during this retirement.
+
+Infrastructure snapshot **2026-10-20**; tickets reconciled **2026-10-24** (not a
+full infrastructure re-verification). This is the recorded state of the Reef agent setup and
 toolkit consolidation, tracked against the [approved plan](personal-agent-toolkit-plan.md).
 Dated evidence from the October 1–4 backend rollout and session-history audit is in
 [October 2026 checkpoints](checkpoints-2026-10.md). Resuming through Paseo on Reef?
@@ -29,6 +58,13 @@ Every open item below is also a ticket (`tk ready` lists what can start now, and
 `tk ls` lists all of them). Suggested order: the two chezmoi unit fixes, then the
 toolkit epic (`at-iv51`).
 
+The [October 24 ticket reconciliation](ticket-reconciliation-2026-10-24.md)
+reviewed all 16 open tickets: `at-vuyt` is now closed after live verification of
+the pre-push fix on both laptops; 15 tickets remain open. It also corrects the
+Browser Harness and Zoho descriptions and separates unverified work from completion.
+Cross-machine CASS is tracked in `at-oln2`; the remote sources still point at manual
+SSH exports, so archived searchability does not establish fresh cross-host access.
+
 ### Backend closeout
 
 1. **OpenCode checks in Paseo.** Permissions/interruption and an OpenCode
@@ -41,8 +77,9 @@ toolkit epic (`at-iv51`).
    and covers `~/dev`, `~/.paseo` (including uploads and config), OpenCode data,
    the CASS source exports, and `~/.local/share/paseo-hub`. Still open: the live
    `paseo.service` user unit is not chezmoi-managed (`paseo-hub.service` is), and
-   chezmoi still ships the pre-scheduler `cass`/`cass-sync` units, which are
-   disabled on Reef. Adopt the first and retire the second.
+   chezmoi still ships the pre-scheduler `cass`/`cass-sync` units. They were
+   disabled on all three hosts by October 22; source retirement is still open.
+   Adopt the first and retire the second.
 
 ### Mastra Factory — retired 2026-10-20
 
@@ -90,8 +127,11 @@ accounts: `rswift`, `wharfi` (Caddy).
 3. **Slack bot — done 2026-10-20.** "Ryan's Paseo" in MLH's workspace over Socket
    Mode (scopes: `app_mentions:read`, `channels:history`, `groups:history`,
    `chat:write`, `files:read`, `reactions:write`, `users:read`). The `slack-help`
-   trigger (`~/dev/mlh/zoho-creator-backup/.paseo/triggers/slack-help.yml`, committed
-   there 2026-10-20; that repo's push waits on reconciling its diverged `main`) fires only for Ryan (`U0C7WS2JZ`) in `C0BNR0P6HGW`, running
+   trigger (`~/dev/mlh/zoho-creator-backup/.paseo/triggers/slack-help.yml`) was
+   reported committed on October 20, but the October 24 check finds it untracked
+   with no commit in current local refs. Publication still waits on reconciling
+   the diverged `main` (`at-v2cb`). The tested trigger fires only for Ryan
+   (`U0C7WS2JZ`) in `C0BNR0P6HGW`, running
    Claude Opus 5.5 in `auto` mode with `cwd` in zoho-creator-backup, which Ryan
    chose knowingly; the repo has only production Zoho. Use `mode: default` if it
    should ask before acting. Tested end to end. Original plan: In Hub, go to **Apps → Slack (Socket Mode)**,

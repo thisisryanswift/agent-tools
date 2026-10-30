@@ -21,3 +21,12 @@ Options considered on 2026-10-22: (A, recommended) Syncthing collection: send-on
 
 From Marlin and Tortoise, an agent's cass MCP search returns sessions created on all three hosts within about 30 min of creation, with no Tailscale check prompts and no SSH policy change (unless option C is chosen explicitly). The endpoint is not reachable without credentials. Old frozen ssh sources are removed or archived from sources.toml. Decisions are recorded in docs/consolidation-status.md.
 
+## Notes
+
+**2026-10-24T23:17:59Z**
+
+Still open: Reef's ~/.config/cass/sources.toml continues to list marlin-rswift and
+tortoise-rswift as manual SSH sources pointing to cass-source-exports/opencode.
+Successful searches of archived remote sessions do not establish fresh collection
+or working MCP access from those hosts. No cross-host freshness/authentication
+acceptance test, transport deployment, or SSH policy change was performed.

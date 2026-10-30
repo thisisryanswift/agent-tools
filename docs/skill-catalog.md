@@ -1,5 +1,16 @@
 # Skill catalog
 
+**2026-10-28 update:** Matt Pocock's promoted pack replaces the proposed personal
+engineering baseline below. All 27 promoted skills are installed globally for
+OpenCode, Claude Code, Codex, and Antigravity CLI on Reef; see
+[the rollout record](matt-pocock-rollout.md). Retain the old
+engineering sources without installing overlapping workflows. Specialist sources
+and the existing handoff work remain separate and unchanged.
+
+**Retirement:** Ryan subsequently requested deletion of `test-coverage`. Its skill,
+canonical/copied prompt, and dedicated agent/command adapters have been removed.
+Installer tests remain; the old engineering rows below are reference-only.
+
 Source selection as of 2026-10-01. Owner: Ryan, in `agent-tools`. These are local
 source candidates for deployment; structural checks are not runtime qualification.
 See [provenance](source-provenance.md) and [rollout status](consolidation-status.md).
@@ -8,19 +19,21 @@ See [provenance](source-provenance.md) and [rollout status](consolidation-status
 
 | ID | Purpose and intended consumer | Execution host / required capabilities | Evidence and remaining check |
 | --- | --- | --- | --- |
+| `crit` | Explicitly requested human review alongside Matt's workflow | Reef CLI publishes to approved tailnet-only https://crit.wharfi.sh; local mode only when explicitly requested | Installed for all four runtimes with manual-only metadata. Hosted publication, real human comment, and authenticated fetch verified; Ryan closed the test review without requiring a revision. See [deployment](global-workflow.md). |
 | `code-review` | Requested diff review in coding runtimes | Reef or the selected repository host; repository reads, Git, search | Existing prompt retained; reference copy checked. Test findings and read-only permissions in each runtime. |
-| `test-coverage` | Requested coverage-gap analysis in coding runtimes | Repository and tests on execution host; Git and search | Existing prompt retained; reference copy checked. Test usefulness and false-positive rate. |
 | `brainstorming` | Deliberate design dialogue when selected | Host with project context and a place to write the design | Existing Superpowers-derived protocol retained. Its broad automatic trigger and approval/commit rules need preference alignment before deployment. |
 | `agent-session-migration` | OpenCode V2 session administration; optional Hermes use only with that capability | The owning OpenCode server and authenticated CLI/API, or the native session-move tool | Rewritten for V2. This session exercised native same-server movement and API lookup; cross-server transfer remains untested. |
+| `paseo-handoff` | Continue current work on Reef/Paseo with a fresh agent, portable context, and preserved files | Source agent with current conversation and repository access; authorized SSH transfer to Reef when selected | Added 2026-10-24. Includes preparation/receiving workflow and private handoff template; live Marlin → Paseo qualification remains pending. |
 | `ryan-blog` | Personal writing in coding or Hermes workflows | Host that can read the current blog checkout and relevant source notes; the blog's checker when available | Merged from two personal sources. Needs a real draft/edit comparison against Ryan's edits. |
 | `browser-harness-cli` | Interactive Python/CDP browser work from coding or Hermes agents | Chosen browser host; Browser Harness, workers/wrappers, Chrome, and selected profile access | Source contracts compared. No browser execution test in this pass. |
 | `wayland-app-icon-fix` | Desktop maintenance when a Linux app's runtime ID mismatches its launcher | The affected desktop user/session; desktop files, optional `kdotool`, KWin D-Bus tools | Byte-identical import from matching repository/chezmoi sources. Verify on an affected desktop. |
 
 ## Selection by role
 
-- **Coding on Reef:** start with review and test coverage. Select design guidance
-  deliberately, after aligning the retained brainstorming protocol with Ryan's
-  preference for proportionate process.
+- **Coding on Reef:** use Matt's promoted pack. The retained personal review and
+  brainstorming sources are not a second workflow to install alongside it.
+- **Human review:** manually request Crit for the actual ticket/spec/file/diff.
+  It does not replace Matt's agent review or automatically follow specification.
 - **Hermes:** select writing or browser guidance only where its profile has the
   relevant tools and project access. Hermes's own assistant skills stay distinct.
 - **Desktop maintenance:** install Wayland guidance only for workflows that can
@@ -28,6 +41,8 @@ See [provenance](source-provenance.md) and [rollout status](consolidation-status
   Marlin's compositor.
 - **Session administration:** the migration skill is OpenCode-specific; ordinary
   Paseo client switching does not require a session migration.
+- **Work handoff to Reef:** select `paseo-handoff` on the source execution host.
+  It preserves context and working files; native transcript import is separate.
 
 These are selections, not a bundle installed everywhere. Codex, Claude, and
 Gemini/Antigravity discovery and tool behavior remain separate verification tasks.
@@ -50,7 +65,8 @@ Gemini/Antigravity discovery and tool behavior remain separate verification task
 ## Editing and installation
 
 Edit the original engineering prompts in `prompts/`, then run `make sync` and
-`make check`. Edit the four specialist skills directly in `skills/<id>/SKILL.md`.
+`make check`. Edit specialist skills directly in `skills/<id>/SKILL.md` and their
+supporting references.
 Source ancestry and intentional adaptations belong in the provenance record.
 
 Use the [explicit installer](../README.md#install) from a persistent checkout on

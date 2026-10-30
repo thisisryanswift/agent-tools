@@ -25,12 +25,12 @@ class InstallSkillsTest(unittest.TestCase):
     def test_conflicting_user_content_prevents_the_entire_install(self):
         with tempfile.TemporaryDirectory() as tmp:
             destination = Path(tmp)
-            existing = destination / "test-coverage"
+            existing = destination / "brainstorming"
             existing.mkdir()
             user_file = existing / "SKILL.md"
             user_file.write_text("User-owned skill\n")
             with self.assertRaises(ValueError):
-                installer.install(destination, ["code-review", "test-coverage"])
+                installer.install(destination, ["code-review", "brainstorming"])
             self.assertFalse((destination / "code-review").exists())
             self.assertEqual(user_file.read_text(), "User-owned skill\n")
 
@@ -48,7 +48,7 @@ class InstallSkillsTest(unittest.TestCase):
             destination = Path(tmp) / "skills"
             installer.install(destination, ["code-review"], dry_run=True)
             self.assertFalse(destination.exists())
-            for name in ["../prompts", "unknown-skill"]:
+            for name in ["../prompts", "unknown-skill", "test-coverage"]:
                 with self.subTest(name=name), self.assertRaises(ValueError):
                     installer.install(destination, ["code-review", name])
                 self.assertFalse(destination.exists())

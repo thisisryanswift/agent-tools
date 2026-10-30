@@ -1,5 +1,15 @@
 # Source provenance and consolidation decisions
 
+## Matt Pocock baseline — 2026-10-28
+
+Selected `mattpocock/skills` at `59db609eb1e18aaf59b63284d0e52255aff0c63c`
+(version 1.3.1, MIT, Matt Pocock). The complete pinned checkout/license live under
+`~/.local/share/agent-tools/upstreams/mattpocock-skills/<revision>`; only the 27
+manifest-promoted directories are linked into global OpenCode, Claude Code,
+Codex, and Antigravity CLI discovery on Reef. Upstream files are unchanged. Local
+policy is in chezmoi-managed instructions, not a fork. See
+[deployment evidence](matt-pocock-rollout.md).
+
 Inspected 2026-10-01. This is a file import/adaptation with exact source revisions;
 Git histories have not been merged. Original repositories and the browser stash
 remain available during consumer migration.
@@ -37,6 +47,23 @@ The V2 migration rewrite uses the documented API contract and observed CLI help:
 - https://opencode.ai/v2/docs/migrate-v1
 - https://opencode.ai/v2/docs/skills
 
+## Locally authored additions
+
+- `workflows/matt-workflow.md`: Ryan-approved global tracker/spec convention,
+  installed via a chezmoi-managed link; native `tk` mapping preserves project
+  tracker exceptions and does not modify Matt's upstream skills.
+- `crit`: manual-only adapter based on Crit v0.23.1 CLI help and upstream
+  integration protocols; MIT notice retained under `skills/crit/references/`.
+  No upstream lifecycle hooks, automatic CLI skills, or runtime plugin copied.
+  The upstream Linux amd64 binary was installed separately after release digest
+  verification; see [the deployment record](global-workflow.md).
+
+- `paseo-handoff` (2026-10-24): written for Ryan's Marlin → Reef/Paseo work
+  continuation request. Keeps context and working-file transfer separate from
+  native session administration; includes a private packet template. No runtime
+  implementation or third-party skill was imported. Live handoff verification
+  remains a deployment task.
+
 ## Browser reconciliation
 
 | Material | Disposition |
@@ -54,6 +81,12 @@ stays in the configured browser workspace until useful reviewed content exists t
 promote; it is separate from cookies, profiles, and installed skill instructions.
 
 ## Retired and retained material
+
+- 2026-10-28: removed the old `test-coverage` skill, canonical/copied tests prompt,
+  dedicated `agent/tests.md` and `command/tests.md`, and build/check references at
+  Ryan's request after selecting Matt's baseline. No installed copies existed in
+  the five inspected Reef discovery roots. Installer tests were preserved and the
+  conflict test now uses a retained skill. Historical inventories/tickets remain.
 
 - Removed `agent-tools`' Jules prompt, skill, copied reference, sync entry, and
   installation guidance. Excluded the older repository's Jules skill.

@@ -32,7 +32,7 @@ execution environment separately from the client process.
 
 ## First useful comparison
 
-Start with a small review/test-coverage set: a real bug, an apparent bug disproved
+Start with a small review/testing set for Matt's selected skills: a real bug, an apparent bug disproved
 by surrounding context, sound code, and a fixture containing pre-existing user
 edits. Compare a stock runtime against the same runtime with the selected skill.
 Hold model/version, prompt, repository state, tools, and permissions fixed.

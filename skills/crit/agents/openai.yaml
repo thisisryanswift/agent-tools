@@ -1,0 +1,5 @@
+interface:
+  display_name: "Crit"
+  short_description: "Manually requested human review on the selected Crit target"
+policy:
+  allow_implicit_invocation: false

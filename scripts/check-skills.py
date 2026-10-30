@@ -9,7 +9,6 @@ from urllib.parse import unquote, urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 PROMPTS = {
     "code-review": "review-prompt.md",
-    "test-coverage": "tests-prompt.md",
     "brainstorming": "brainstorming-prompt.md",
 }
 
