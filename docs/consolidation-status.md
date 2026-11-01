@@ -40,7 +40,7 @@ Start with [the handoff](paseo-handoff.md).
 | Area | State |
 | --- | --- |
 | Paseo backend (Reef) | Upstream **0.11.0** from the npm package in `~/.local/share/paseo`, run as `rswift` (`paseo daemon run`), Node 26.10.0. Switched from the beta.2 source build on 2026-10-07; `~/dev/tools/paseo` is a development clone only. Upgrade steps are in the handoff. |
-| Coding providers in Paseo | OpenCode 2.0.21 (`openai/gpt-6.1-sol` via OpenAI OAuth), Claude, and Codex (user-confirmed 2026-10-06), Antigravity/`agy` and Cursor (smoke-tested 2026-10-10). OpenCode Go, GLM, Copilot, and Devin are not yet covered. |
+| Coding providers in Paseo | OpenCode 2.0.21 (`openai/gpt-6.1-sol` via OpenAI OAuth), Claude, and Codex (user-confirmed 2026-10-06), Antigravity/`agy` and Cursor (smoke-tested 2026-10-10), Copilot and Pi on OpenCode Go (smoke-tested 2026-11-01). GLM and Devin are not yet covered. |
 | Clients | Marlin, Tortoise, and Android user-confirmed against Reef. Desktop `0.11.0-beta.3` is installed on Marlin, Tortoise, and Reef; Reef's GUI check awaits physical access. |
 | Native ↔ Paseo continuity | Works with manual **Reload agent** (accepted); live sync deferred. Native-origin import, permissions/interruption, and attachment checks are still open. |
 | Session history (CASS) | Reef is the canonical archive (CASS 0.10.0). All four preserved snapshots are indexed and searchable over SSH and from native/Paseo OpenCode. CASS's own scheduler refreshes it (every 30 minutes, plus nightly) across OpenCode, Claude Code, Codex, Cursor, and Antigravity, and Reef's nightly restic backup covers it. Safe live remote-DB collection is **deferred by Ryan** (2026-10-04); no custom export pipeline. |
@@ -209,6 +209,10 @@ chezmoi while the app is used.
 - Cursor: `cursor-agent` installed with the official Linux installer and signed in
   (Ryan's work account); added as an ACP provider in `~/.paseo/config.json` and
   applied with `paseo reload`.
+- Copilot (2026-11-01): `copilot-cli` Homebrew cask, tracked in chezmoi's
+  `desktop-ai-apps.txt`. Built-in provider, authenticated via `gh`;
+  `paseo provider diagnostic copilot` refreshed the global status; each workspace's
+  cached provider snapshot also needed a refresh before `paseo run` worked.
 
 ### Retire `/srv/dev` (2026-10-09 to 10-10)
 

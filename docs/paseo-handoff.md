@@ -65,6 +65,40 @@ orchestration framework, a maintained Paseo fork, or another full migration plan
   Full access only (`--dangerously-skip-permissions`).
 - Cursor: `cursor-agent` installed and signed in; added to `~/.paseo/config.json` as
   an ACP provider and applied with `paseo reload`. Smoke-tested on October 10.
+- Copilot: `copilot-cli` 1.0.105 Homebrew cask installed on November 1 (free faculty
+  plan, 1,500 premium requests/month). Uses Paseo's built-in `copilot --acp` provider
+  with no config entry; auth comes from the existing `gh` login. After installing,
+  `paseo provider diagnostic copilot` refreshed only the global status (Ready, 15
+  models); `paseo run` still saw the per-workspace cache as unavailable until that
+  workspace's provider snapshot was refreshed (`refresh_providers_snapshot` with
+  `cwd`; `paseo reload` does not do it). Smoke-tested via `paseo run` on November 1
+  (`claude-haiku-4.5`, Plan mode).
+- Pi: `pi-coding-agent` 1.4.0 (Homebrew core; `@mariozechner/*` is deprecated) installed
+  November 1, using the OpenCode Go subscription. Go needs its own key (Zen keys get
+  `Upstream request failed: Invalid credential`), created under Console > Account >
+  Personal API keys for the Go workspace with Models: Request only, then stored with
+  `opencode auth login`. OpenCode 2 keeps credentials in `opencode.db`; the legacy
+  `~/.local/share/opencode/auth.json` is stale. `~/.pi/agent/auth.json` resolves the key
+  at runtime via `opencode auth export` (active `opencode-go` entry); no key copied.
+  Smoke-tested via `paseo run` (`opencode-go/qwen3.8-flash`).
+- Usage panel: Paseo's OpenCode Go usage source reads only the legacy OpenCode
+  `auth.json` ([getpaseo/paseo#6428](https://github.com/getpaseo/paseo/issues/6428),
+  fix in open PR #6426). Workaround since November 1: an `opencode-go` entry copied
+  from `opencode auth export` into `~/.local/share/opencode/auth.json` (mode 600).
+  Re-copy after rotating the Go key; delete the entry once #6426 ships. Copilot's
+  card shows only the reset date; premium requests are not parsed upstream, filed as
+  [getpaseo/paseo#8478](https://github.com/getpaseo/paseo/issues/8478).
+- Antigravity usage: local fork of `yannelli/paseo-usage-plugin` at
+  `~/dev/personal/paseo-usage-plugin`, branch `gemini-quota-pool` off audited v0.2.4
+  (`0b6cdfb`), installed November 1 as a directory source (backups
+  `config.json.bak-20261101-usage-plugin` and `...-usage-plugin-fork`). Upstream v0.2.4
+  showed only the Claude/GPT pool: Google reports Gemini buckets only on
+  `daily-cloudcode-pa` with an `antigravity/cli/<agy version>` user agent (as
+  `breathi3552/paseo-agy-usage` does). The patch switches the endpoint and reads the
+  version from `agy --version` (`AGY_USAGE_CLI_VERSION` overrides). Reads
+  `~/.gemini/antigravity-cli/antigravity-oauth-token` read-only; never refreshes it, so
+  the card can show expired until `agy` is used again. Directory sources run the
+  working tree live: edits there affect the daemon.
 - Reef CASS **0.10.0** has indexed preserved session-only snapshots from Marlin
   `rswift`, Reef `rswift`, Reef legacy `opencode`, and Tortoise `rswift`. Source-
   filtered CLI and MCP searches passed, as did an MCP canonical-message view over
