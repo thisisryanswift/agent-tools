@@ -86,9 +86,13 @@ use that tracker's operations instead of translating them into local tk copies.
 
 Start Crit only when the user names Crit or explicitly invokes its skill. A generic
 "review this" request, `code-review`, or completing a spec does not start Crit.
-The approved hosted target for requested reviews is https://crit.wharfi.sh
-(tailnet-only). Load the `crit` skill for hosted publication and feedback fetch;
-use local mode only when explicitly requested. It can review a `.tickets/<id>.md`
-file directly; no duplicate spec document is needed. Other upload destinations or
-network exposure require separate authorization. Crit approval is scoped feedback,
-not permission to commit, publish beyond the review, execute a plan, or broaden the task.
+On Reef, load the `crit` skill for independent CLI reviews at
+https://crit.wharfi.sh and https://<review-id>.crit.wharfi.sh (tailnet-only).
+Use the launcher with an explicit conversation identity, retain its review ID,
+and use that review's targeted waiter for feedback and subsequent rounds. The
+deployment record identifies the index address during root cutover. Reviews can
+use a `.tickets/<id>.md` file directly; no duplicate spec is needed. Shared
+checkouts share files even when feedback is separate. Use local mode only for
+explicit local requests. Other upload destinations or network exposure require
+separate authorization. Crit approval is scoped feedback, not permission to
+commit, publish beyond the review, execute a plan, or broaden the task.

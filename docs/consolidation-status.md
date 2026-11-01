@@ -3,10 +3,12 @@
 Global tracker/spec defaults and manual Crit are now implemented on Reef for the
 four coding runtimes: established project trackers win, otherwise `tk`; specs
 remain tracker-backed. Crit v0.23.1 is user-installed with a manual-only skill;
-requested reviews use the approved tailnet-only **https://crit.wharfi.sh** target.
-Local mode is only for explicit local requests. Hosted publication, a real human
-comment, and authenticated feedback fetch passed; Ryan closed that test review
-without requiring a revision. There is no automatic review gate or notification loop.
+requested reviews use independent CLI sessions with the permanent tailnet-only
+index **https://crit.wharfi.sh** and per-review HTTPS hostnames. Five concurrent
+routes, remote completion isolation, saved resume, and restart passed. Ryan
+verified the document revision loop and Git diff UI remotely. Legacy Crit Web
+data/services remain available for rollback while runtime adoption is checked.
+Local mode is only for explicit local requests; there is no automatic review gate.
 See [global workflow deployment](global-workflow.md).
 
 ## Latest toolkit decision — 2026-10-28

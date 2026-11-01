@@ -160,9 +160,10 @@ Global `tk` defaults and manual Crit support are now implemented; see
 [the deployment record](global-workflow.md). Crit v0.23.1 in `~/.local/bin` takes
 precedence over the stale root-owned launcher, which was not modified. The manual
 skill is linked for all four runtimes. Requested reviews use the approved
-tailnet-hosted **https://crit.wharfi.sh** target; local mode is only for explicit
-local requests. No hooks or automatic review gates were added. Hosted publication,
-a real human comment, and authenticated feedback fetch passed, and Ryan closed
-the test review without requiring a revision (`at-nxnl` closed). The managed global
-instructions now agree with the hosted skill; see the deployment record for
-authentication, review-state isolation, and remaining operational checks.
+independent CLI sessions at **https://crit.wharfi.sh** and per-review tailnet
+HTTPS addresses; local mode is only for explicit local requests. No hooks or
+automatic review gates were added. Remote multi-session routing and Ryan's real
+document/Finish/revision and Git diff UI checks passed. The four Reef instruction
+files and shared skill now select this session protocol; fresh invocation checks
+in every runtime and legacy-service retirement remain tracked separately.
+The earlier hosted publish/comment/fetch check remains historical (`at-nxnl`).

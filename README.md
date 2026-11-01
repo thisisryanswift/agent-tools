@@ -15,8 +15,10 @@ prompt/adapters have been removed; the installer's test suite remains.
 
 Global workflow defaults now use `tk` unless a project has an established tracker;
 specs live in that tracker. Crit is optional and manually invoked, using the
-approved tailnet-hosted target **https://crit.wharfi.sh**. Local mode is only for
-explicit local requests. See [global workflow and Crit usage](docs/global-workflow.md).
+independent CLI sessions on Reef. **https://crit.wharfi.sh** lists saved reviews;
+each review has its own tailnet-only HTTPS address, comments, and completion
+waiter. Local mode is only for explicit local requests. See
+[global workflow and Crit usage](docs/global-workflow.md).
 
 ## Working plan
 

@@ -1,6 +1,25 @@
 # Global tracker defaults and manual Crit
 
-## Hosted Crit — current state
+## Independent Crit sessions — current deployment
+
+The independent-session router is deployed under `at-sxgj`. Per-review
+`https://<review-id>.crit.wharfi.sh` URLs work over private DNS/TLS, and the
+permanent index is **https://crit.wharfi.sh**. The validation index remains
+available as an additional check endpoint.
+The [manual skill](../skills/crit/SKILL.md) now selects the
+[session protocol](../skills/crit/references/sessions.md) for explicitly requested
+code/document reviews, with durable conversation identity and targeted feedback.
+Five concurrent HTTPS identities and synthetic completion isolation passed;
+Ryan's real document comments and Finish events reached the same waiter across
+two rounds; he also confirmed the remote Git diff UI with a screenshot.
+All 34 tests pass, including peer-process verification under the actual user-unit
+permissions. The [operations record](crit-sessions-operations.md) owns current
+activation, recovery, root cutover, legacy retention, and remaining runtime checks.
+
+The Crit Web rollout below is historical. Its services and data are preserved
+during cutover; it is no longer the default protocol for a new review.
+
+## Historical Crit Web rollout
 
 Ryan subsequently approved Crit Web on Reef at `https://crit.wharfi.sh`,
 tailnet-only, replacing the need for SSH forwarding for hosted reviews.

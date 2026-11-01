@@ -1,0 +1,32 @@
+# Separate, gated cutover: replace ONLY the existing combined
+# crit.wharfi.sh, preview.crit.wharfi.sh block with these two blocks.
+# Keep validation.Caddyfile's wildcard block and all unrelated routes.
+# Keep old services running until the preservation/recovery gates pass.
+crit.wharfi.sh {
+    bind 100.81.54.26
+    tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        resolvers 1.1.1.1 8.8.8.8
+    }
+    reverse_proxy 127.0.0.1:17466 {
+        flush_interval -1
+    }
+}
+
+# Preserve old preview during initial cutover. Before retiring old services,
+# replace reverse_proxy with the explicit 410 response below and validate/reload.
+preview.crit.wharfi.sh {
+    bind 100.81.54.26
+    tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        resolvers 1.1.1.1 8.8.8.8
+    }
+    encode zstd gzip
+    @review_api path /api/reviews /api/reviews/* /api/export/*
+    forward_auth @review_api 127.0.0.1:17465 {
+        uri /api/auth/whoami
+    }
+    reverse_proxy 127.0.0.1:17465
+    # Retirement replacement for encode/forward_auth/reverse_proxy directives:
+    # respond "Historical Crit Web preview is offline; contact the operator for recovery." 410
+}

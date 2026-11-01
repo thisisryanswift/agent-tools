@@ -14,19 +14,25 @@ In runtimes that ignore invocation metadata, apply this same explicit-request ru
    `.tickets/<id>.md`, not an exported copy. Completion: know precisely which
    content the user requested for human review.
 2. Select the protocol before running a review:
-   - **Reef hosted default:** Ryan selected tailnet-only `https://crit.wharfi.sh`
-     for manually requested reviews. Read [the hosted protocol](references/hosted.md).
-     Stop at missing credentials or an unavailable target rather than changing
-     destination. Publishing is explicit and limited to the selected content.
+   - **Reef independent-session default:** use [the session protocol](references/sessions.md)
+     for code and document reviews. The router is deployed on the tailnet at
+     `https://<review-id>.crit.wharfi.sh`. Use an explicit conversation identity,
+     retain the returned review ID, and use its targeted wait/round lifecycle.
+     The deployment record identifies the current index address during cutover.
+   - **Explicit legacy hosted operation:** [the hosted protocol](references/hosted.md)
+     is historical. Check the deployment record before a specifically requested
+     legacy fetch; preserve saved state and credentials. It is not the default
+     or a fallback for a failed independent session.
    - **Explicit local review:** read [the local protocol](references/protocol.md).
      Bind with `--host 127.0.0.1 --no-open`; localhost belongs to the execution
      host. Use this branch when requested, not as an automatic hosted fallback.
    - **Other execution host or destination:** establish target/authentication and
      authorization first. Reef credentials are not a portable skill asset.
-3. Follow the selected protocol and relay the actual review URL. Hosted sharing
-   returns after publication; it does not keep an agent run waiting for a human.
-   When the user says feedback is ready, fetch it from the same review state.
-4. Read comments and replies, make only authorized changes, and publish another
+3. Follow the selected protocol and relay the actual review URL. Independent
+   sessions use the launcher's targeted wait/round lifecycle. Hosted snapshots
+   return after publication; when the user says feedback is ready, fetch it from
+   the same saved hosted state.
+4. Read comments and replies, make only authorized changes, and advance another
    round through the same protocol. Resolving comments belongs to the reviewer
    unless requested. Completion: verified readback or a clearly reported blocker.
 5. Report the actual approval/pending state. A timeout, empty comment list, or

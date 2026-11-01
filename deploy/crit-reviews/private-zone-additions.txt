@@ -1,0 +1,5 @@
+; Merge ONLY into the existing private $ORIGIN wharfi.sh. zone on Lobster.
+; Existing crit and preview.crit records remain intact.
+; Do not create public A/AAAA records; the Cloudflare DNS challenge uses TXT only.
+*.crit           IN A 100.81.54.26
+validation.crit  IN A 100.81.54.26

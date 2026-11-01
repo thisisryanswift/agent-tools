@@ -1,0 +1,9 @@
+$ORIGIN wharfi.sh.
+$TTL 60
+@ IN SOA ns.wharfi.sh. hostmaster.wharfi.sh. (2026110101 60 60 600 60)
+  IN NS ns.wharfi.sh.
+ns IN A 100.81.54.26
+crit IN A 100.81.54.26
+preview.crit IN A 100.81.54.26
+*.crit IN A 100.81.54.26
+validation.crit IN A 100.81.54.26

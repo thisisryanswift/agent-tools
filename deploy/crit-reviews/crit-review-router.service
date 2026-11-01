@@ -1,0 +1,19 @@
+[Unit]
+Description=Tailnet Crit review loopback router
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/dev/personal/agent-tools
+ExecStart=/usr/bin/python3 %h/dev/personal/agent-tools/scripts/crit-review.py --binary %h/.local/bin/crit serve --port 17466 --index-host validation.crit.wharfi.sh
+Restart=on-failure
+RestartSec=3
+# Reviews have their own targeted launcher lifecycle and survive router restarts.
+KillMode=process
+UMask=0077
+NoNewPrivileges=true
+# Keep the user's mount namespace: unprivileged mount sandboxing prevents
+# /proc identity checks on Crit daemons launched by other user sessions.
+
+[Install]
+WantedBy=default.target

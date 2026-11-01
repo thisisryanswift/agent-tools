@@ -91,20 +91,23 @@ Another round if needed; report the actual approval state
 The agent does not resolve Ryan's comments on his behalf unless asked. Review
 approval is not permission to implement a plan, commit, or publish.
 
-Manually requested reviews are published to our self-hosted **Crit Web** at
-**https://crit.wharfi.sh**. Connect your device to Tailscale and open the review
-link—no localhost address or SSH tunnel is needed. The server stores the selected
-review content and comments on Reef, not on public `crit.md`.
+Manually requested code and document reviews use independent **Crit CLI**
+sessions on Reef. **https://crit.wharfi.sh** lists saved reviews; the launcher
+returns a separate `https://<review-id>.crit.wharfi.sh` address for each review.
+Connect your device to Tailscale and open that link. The full diff UI works
+without a localhost callback or SSH tunnel, and nothing is uploaded to public
+`crit.md`.
 
-The application is behind tailnet-only HTTPS. CLI publication and feedback fetch
-use a target-specific API token; local account registration is normally closed.
-An unlisted review link is not per-user access control: other permitted tailnet
-clients with the link may be able to read it. Publishing to another service or
-making the app internet-accessible still requires separate authorization.
+The agent records an explicit conversation/review identity and waits for that
+review's Finish event. After authorized edits, it advances the same review to
+the next round. Separate conversations keep separate comments and completion
+signals even in one checkout; their underlying files are still shared.
 
-Hosted feedback must be fetched explicitly; the old local CLI's blocking review
-waiter does not prove a hosted round is complete. Tell the agent when your review
-is ready, and it will fetch comments before responding or revising the document.
+Tailnet access is the outer boundary; review IDs are routing identities rather
+than authentication credentials. Other destinations or public exposure require
+separate authorization. Legacy Crit Web data and services are retained for
+rollback during the remaining runtime-adoption checks; new reviews use the
+session protocol.
 
 ## Specialists still to review
 
